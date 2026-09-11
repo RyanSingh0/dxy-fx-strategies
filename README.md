@@ -1,5 +1,17 @@
 # Two Blind Spots in Backtest Validation
 
+## Repository layout
+
+`src/`, `data/`, `results/` and `paper/` reproduce the submitted manuscript. Run
+`./run_all.sh` and every table regenerates from the raw inputs.
+
+`original/` holds the earlier notebook analysis of the same data, kept deliberately.
+The manuscript identifies four defects in that implementation, and this is the code
+in which they can be inspected: the `2Q` period alias collapsing to quarterly, the
+pair price files being one session late relative to the index, the benchmark for the
+Reality Check and SPA tests, and `np.where` mapping NaN to -1 over the first lookback
+window. The notebooks are preserved as they were and are not maintained.
+
 Replication code and data for the paper *Two Blind Spots in Backtest Validation: Evidence
 from the U.S. Dollar Index* (Meena and Pinsky).
 
