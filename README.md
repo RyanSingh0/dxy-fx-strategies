@@ -12,8 +12,7 @@ pair price files being one session late relative to the index, the benchmark for
 Reality Check and SPA tests, and `np.where` mapping NaN to -1 over the first lookback
 window. The notebooks are preserved as they were and are not maintained.
 
-Replication code and data for the paper *Two Blind Spots in Backtest Validation: Evidence
-from the U.S. Dollar Index* (Meena and Pinsky).
+Replication code and data for the paper *Two Blind Spots in Backtest Validation: From a Manufactured Dollar Index Anomaly to a Corrected Null Result* (Meena and Pinsky).
 
 Modern backtest validation defends against one failure, that too many strategies were
 tried. This repository documents two failures that defence cannot see, using the U.S.
