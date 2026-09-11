@@ -1,0 +1,44 @@
+====================================================================================================
+Q1.  THE AUTHOR-FAVOURABLE SEARCH SPACE
+====================================================================================================
+     lookback fixed at 126 and cardinality fixed at 2 a priori;
+     only rebalance frequency (6) x cross-section slice (3) x regime on/off (2) searched.
+
+universe                                   configs  White RC p  Hansen SPA  RW surv
+A. exchange futures, 5 pairs (tradeable)       36      0.4500      0.4618        0 
+B. futures + FRED SEK, 6 pairs                 36      0.5544      0.5502        0 
+C. Federal Reserve H.10 spot, 6 pairs          36      0.0668      0.0838        0 
+
+====================================================================================================
+Q2.  ENSEMBLES, no configuration is chosen, so nothing needs correcting
+====================================================================================================
+
+   A. exchange futures, 5 pairs (tradeable)   (DXY buy-and-hold End 125.24)
+      ensemble                                                    n cfg      End   Sharpe     t_NW       p
+      all 'bottom' slices, regime-signed, every freq/card/lookback     36   108.40    0.148     0.56  0.5748
+      all 'bottom' slices, regime-signed, quarterly only              6   147.35    0.458     1.76  0.0790
+      all regime-signed configurations (any slice)                  108    95.69   -0.160    -0.63  0.5264
+      every configuration in the grid                               144    89.10   -0.449    -1.72  0.0850
+      -> factor alpha of that ensemble: +1.26%/yr (t +1.13, p 0.2572); betas DOLLAR -0.27 CARRY -0.02 XSMOM -0.06
+      -> 2011-2018: End  106.34 Sharpe +0.219 t +0.60 p 0.5497
+      -> 2019-2025: End  101.93 Sharpe +0.082 t +0.21 p 0.8304
+
+   B. futures + FRED SEK, 6 pairs   (DXY buy-and-hold End 106.42)
+      ensemble                                                    n cfg      End   Sharpe     t_NW       p
+      all 'bottom' slices, regime-signed, every freq/card/lookback     54   120.49    0.343     1.26  0.2065
+      all 'bottom' slices, regime-signed, quarterly only              9   148.13    0.511     1.90  0.0575
+      all regime-signed configurations (any slice)                  162    94.11   -0.265    -1.01  0.3113
+      every configuration in the grid                               216    91.98   -0.381    -1.39  0.1657
+      -> factor alpha of that ensemble: +1.92%/yr (t +1.91, p 0.0555); betas DOLLAR -0.32 CARRY -0.01 XSMOM -0.07
+      -> 2011-2018: End  116.02 Sharpe +0.582 t +1.54 p 0.1235
+      -> 2019-2025: End  103.86 Sharpe +0.145 t +0.37 p 0.7094
+
+   C. Federal Reserve H.10 spot, 6 pairs   (DXY buy-and-hold End 107.74)
+      ensemble                                                    n cfg      End   Sharpe     t_NW       p
+      all 'bottom' slices, regime-signed, every freq/card/lookback     54   119.97    0.312     1.14  0.2551
+      all 'bottom' slices, regime-signed, quarterly only              9   162.05    0.589     2.19  0.0287
+      all regime-signed configurations (any slice)                  162    92.80   -0.322    -1.20  0.2283
+      every configuration in the grid                               216    93.54   -0.274    -0.97  0.3331
+      -> factor alpha of that ensemble: +2.01%/yr (t +1.72, p 0.0859); betas DOLLAR -0.32 CARRY +0.02 XSMOM -0.08
+      -> 2011-2018: End  113.86 Sharpe +0.439 t +1.15 p 0.2505
+      -> 2019-2025: End  105.36 Sharpe +0.187 t +0.48 p 0.6325

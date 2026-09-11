@@ -1,0 +1,631 @@
+% Two Blind Spots in Backtest Validation: Evidence from the U.S. Dollar Index
+% Formatted with mdpiemu.sty, a visual emulation of the MDPI layout. For submission,
+% replace \usepackage{mdpiemu} with the official MDPI class from the journal template
+% (Definitions/mdpi.cls) and move the metadata into that class's macros.
+\documentclass[10pt]{article}
+\usepackage{mdpiemu}
+
+\Title{Two Blind Spots in Backtest Validation: Evidence from the U.S. Dollar Index}
+\Author{Aryan Meena $^{1}$ and Eugene Pinsky $^{1,*}$}
+\AuthorNames{Aryan Meena and Eugene Pinsky}
+\address{$^{1}$\quad Department of Computer Science, Metropolitan College, Boston University,
+Boston, MA 02215, USA}
+\corres{Correspondence: epinsky@bu.edu}
+\abstract{Backtest validation is built almost entirely around one failure, that too many strategies
+were tried. Using the U.S. Dollar Index and its constituent currency futures over 2010 to
+2025, we document two failures this defence cannot detect. First, a widely used free data
+source records session opening prices with a stale print defect that manufactures an
+overnight anomaly of Sharpe $-1.36$ ($p<0.0001$) absent from exchange futures on the same
+instrument over the same sessions. The standard diagnostics do not merely miss the artefact, they certify it. The
+probability of backtest overfitting is 0.02 for the false result against 0.77 for the
+correct data and before costs the artefact survives stepwise familywise error control,
+because these tools discipline the selection of strategies and never inspect the inputs. An
+exact binomial screen on the location of the open within the daily range detects the defect
+at $p=3.7\times10^{-13}$ with no external reference series. Second, a regime conditioned
+currency strategy reporting Sharpe 0.72 (Newey--West $t=2.78$) reverses once its full 216
+configuration search is declared instead of the six reported. A correctly specified search
+of 1,312 configurations drawn from published specifications then finds none exceeding the
+Sharpe ratio the same search attains on block bootstrapped returns. Reporting that noise
+ceiling would have exposed both failures at once.}
+\keyword{backtest overfitting; data quality; deflated Sharpe ratio; foreign exchange; multiple testing; reproducibility; trading strategy evaluation}
+\JEL{C12; C15; C52; F31; G14}
+
+\begin{document}
+
+
+\section{Introduction}
+
+The modern defence of a quantitative backtest is a defence against one specific failure.
+The analyst enumerates the strategies that were tried, then applies a correction for the
+number of trials: White's Reality Check \citep{white2000}, Hansen's test of superior
+predictive ability \citep{hansen2005}, the stepwise procedure of \citet{romanowolf2005},
+the deflated Sharpe ratio of \citet{baileylopez2014}, the probability of backtest
+overfitting of \citet{bailey2017}, or the haircut Sharpe ratio of \citet{harveyliu2015}.
+This machinery is well developed and widely adopted.
+
+It is also narrow. Every one of these tools takes the input data as given and asks a
+question about the strategy set. Two failures therefore sit outside its field of view. The
+input series may be wrong, in which case the correction is applied faithfully to a number
+that never existed. Or the declared strategy set may be smaller than the set actually
+explored, in which case the correction is applied to the wrong denominator.
+
+This paper documents one of each, on the same instrument, with one codebase and then
+shows what a correctly specified search on the same market produces. Our contribution is
+not that vendor data contains errors. \citet{inceporter2006} established that for equity
+returns two decades ago and their paper remains the standard reference. Our contribution
+is what happens when that literature is placed next to the overfitting diagnostics that
+postdate it, in particular the deflated Sharpe ratio and the probability of backtest
+overfitting. The answer is that those diagnostics invert. On the corrupted series the probability of backtest
+overfitting is 0.016 to 0.028, which reads as an exceptionally robust result. On the
+correct series for the same instrument it is 0.765 to 0.779, which reads as pure noise
+fitting. Both readings are internally correct. A stationary data defect keeps winning out
+of sample for exactly the same reason a real anomaly does, so no overfitting diagnostic
+can separate them.
+
+Section~\ref{sec:data} describes the data. Section~\ref{sec:defect} isolates the defect
+and shows what the diagnostics say about it, then gives a screen that detects it.
+Section~\ref{sec:search} documents the second failure, an undeclared search space.
+Section~\ref{sec:exhaustive} runs a correctly specified search and introduces the noise
+ceiling. Section~\ref{sec:structure} asks whether anything in this market is profitable
+once the analysis is driven by structure rather than by enumeration.
+Section~\ref{sec:protocol} states the reporting protocol we recommend and
+Section~\ref{sec:limits} the limitations.
+
+\section{Data}\label{sec:data}
+
+Table~\ref{tab:data} lists the four sources. The two U.S. Dollar Index series are the
+centre of the paper. One is the ICE spot index as redistributed by a free provider, the
+series on which the original result was found. The other is the ICE Dollar Index futures
+contract obtained from a commercial vendor sourced from the exchange. They describe the
+same underlying index over the same dates.
+
+\begin{table}[H]
+\caption{Data sources. The two dollar index series in the first two rows describe the same
+underlying index over the same dates and are the comparison on which
+Section~\ref{sec:defect} rests.}
+\label{tab:data}
+\begin{tabularx}{\textwidth}{lLlr}
+\toprule
+\textbf{Series} & \textbf{Source} & \textbf{Period} & \textbf{Sessions} \\
+\midrule
+Dollar index, free provider & Free redistribution of the ICE spot index & 2010-12 to 2025-12 & 3,932 \\
+Dollar index futures & Commercial vendor, exchange sourced (DX) & 2010-12 to 2025-12 & 3,889 \\
+Currency futures & CME contracts E6, B6, D6, J6, S6 & 2010-12 to 2025-12 & 3,800 \\
+Spot rates and interest rates & Federal Reserve H.10 and OECD via FRED & 1999-01 to 2026-08 & 6,929 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The five currency futures are the CME contracts for the euro, sterling, Canadian dollar,
+yen and Swiss franc. No liquid Swedish krona contract exists, so the tradeable universe is
+five of the six index constituents. All five carry median daily volume above 25,000
+contracts, contain no violation of the open, high, low, close ordering and are correctly
+dated: their return correlation with the Federal Reserve noon fix peaks at lag zero.
+
+Nearby continuous futures jump when the front contract changes. That jump is the spread
+between two contracts and not a return any holder earns, so all returns are computed
+within contract and the 61 roll sessions in each series are assigned a return of zero. This
+also means that contract changes cannot contribute to the overnight leg examined in
+Section~\ref{sec:defect}.
+
+Every $t$ statistic reported below is corrected for heteroskedasticity and autocorrelation
+following \citet{neweywest1987}, using a Bartlett kernel with the standard automatic
+bandwidth $\lfloor 4(T/100)^{2/9}\rfloor$, which gives eight lags at this sample length.
+The conclusions are insensitive to that choice: the overnight leg of the free series returns
+$p<0.0001$ at eight, nine and twelve lags and the exchange series returns 0.328, 0.328 and
+0.331.
+
+\section{A Data Defect That the Diagnostics Certify}\label{sec:defect}
+
+\subsection{The result and the first attempt to explain it}
+
+Decomposing the daily return into an overnight leg from the previous close to the open and
+a daytime leg from the open to the close produces, on the free series, an overnight leg
+with a Sharpe ratio of $-1.36$ and $p<0.0001$. This is a large effect. On the exchange
+futures for the same instrument the overnight leg has a Sharpe ratio of $+0.25$ with
+$p=0.328$. Both figures are computed on the 3,793 overnight returns available in the 3,794
+sessions for which both series report a complete bar, so the two are directly comparable.
+
+A naive way to locate the source is to substitute one vendor's opening prices into the
+other vendor's series. That test is invalid here. The two series carry a persistent level
+offset of 0.041 index points, which is 6.7 per cent of a typical daily range, so a price
+level substitution injects the offset into every return. Performing it produced a terminal
+value of 1178 for one strategy, which is not a finding but an artefact of the offset.
+
+\subsection{Isolating the open}
+
+The valid version transfers the close to open \emph{return} rather than the price, so that
+each row uses one vendor's price level throughout and the result is free of the offset.
+Table~\ref{tab:swap} reports it.
+
+\begin{table}[H]
+\caption{Scale free decomposition. Each row uses a single vendor's price level throughout
+and transfers only the close to open return, so the level offset between vendors cannot
+contribute. The daytime leg is the residual, which makes the 24 hour return identical
+across rows by construction. Terminal values start from 100 and the sample is the 3,793
+overnight returns common to both series.}
+\label{tab:swap}
+\begin{tabularx}{\textwidth}{Lrrrrrr}
+\toprule
+ & \multicolumn{3}{c}{\textbf{Overnight leg}} & \multicolumn{3}{c}{\textbf{Daytime leg}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\textbf{Price level, opening return} & \textbf{Final} & \textbf{Sharpe} & \textbf{$p$} & \textbf{Final} & \textbf{Sharpe} & \textbf{$p$} \\
+\midrule
+Free, free open          & 61.68  & $-1.358$ & 0.0000 & 197.35 & 0.700 & 0.0086 \\
+Free, exchange open      & 108.08 & $+0.252$ & 0.3280 & 112.62 & 0.151 & 0.5534 \\
+Exchange, exchange open  & 108.08 & $+0.252$ & 0.3280 & 112.22 & 0.146 & 0.5668 \\
+Exchange, free open      & 61.68  & $-1.358$ & 0.0000 & 196.65 & 0.678 & 0.0103 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The overnight leg follows whichever vendor's open is used and is unchanged by whose closes
+are used. This is as close to a controlled experiment as observational data allows. The
+opening prices are the entire source of the effect.
+
+Table~\ref{tab:openloc} shows what is wrong with them. With the level offset removed, the
+free series' open lies outside the exchange's true high to low range on 7.30 per cent of
+sessions. On the 204 sessions where the free open equals its own daily low it sits below
+the exchange low, at $-0.073$ of the exchange range and falls outside that range on 56.9
+per cent of those sessions against 3.5 per cent on ordinary sessions. A price outside the
+session range is not a price at which the instrument traded. The free series also records
+an open exactly equal to the previous close on 6.84 per cent of sessions against 1.34 per
+cent for the exchange series, which is the signature of a stale print.
+
+\begin{table}[H]
+\caption{Location of the recorded open within the exchange session range, with the level
+offset removed. A value of 0 is the exchange low and 1 the exchange high. The sessions on
+which the free open equals its own extreme are the sessions that carry the anomaly.}
+\label{tab:openloc}
+\begin{tabularx}{\textwidth}{Lrrr}
+\toprule
+\textbf{Session group} & \textbf{$n$} & \textbf{Open location} & \textbf{Outside range} \\
+\midrule
+Free open at its own low  & 204   & $-0.073$ & 56.9\% \\
+Free open at its own high & 82    & $+0.994$ & 45.1\% \\
+All other sessions        & 3,508 & $+0.494$ & 3.5\% \\
+\midrule
+Exchange open, all sessions & 3,889 & $+0.498$ & 0.00\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{What the diagnostics say}
+
+The 24 strategy grid of the original study was rerun on both series. On exchange data no
+strategy beats buy and hold at any cost level, the analysis of variance across the 24
+gives $F(23,93312)=0.306$ with $p=0.9994$ and the largest Sharpe ratio in the grid,
+$+0.269$, is below the $+0.316$ that the null expects the maximum of 24 trials to produce.
+The walk forward over 13 out of sample years ends at 97.69 against buy and hold at 122.64.
+There is nothing in the exchange data.
+
+Table~\ref{tab:diagnostics} is the central result of this section. Applied to the corrupted
+series at zero cost, Hansen's test rejects at $p=0.013$, three configurations survive the
+stepwise procedure of \citet{romanowolf2005} and the probability of backtest overfitting
+is 0.016. Applied to the correct series the same diagnostics report 1.000, zero survivors
+and 0.779. The diagnostics rank the false result far above the true one.
+
+\begin{table}[H]
+\caption{Multiple testing and overfitting diagnostics applied to the same 24 strategy grid
+on the two dollar index series, at zero transaction cost. RW is the number of
+configurations surviving the stepwise familywise error procedure of
+\citet{romanowolf2005}. PBO is the probability of backtest overfitting from the
+combinatorially symmetric cross validation of \citet{bailey2017}, reported at 12 and 16
+blocks. Lower PBO indicates a result that persists out of sample.}
+\label{tab:diagnostics}
+\begin{tabularx}{\textwidth}{Lrrrr}
+\toprule
+\textbf{Series} & \textbf{White RC $p$} & \textbf{Hansen SPA $p$} & \textbf{RW survivors} & \textbf{PBO} \\
+\midrule
+Free provider (the artefact) & 0.1032 & 0.0132 & 3 of 24 & 0.016 to 0.028 \\
+Exchange futures (correct)   & 0.9924 & 1.0000 & 0 of 24 & 0.765 to 0.779 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Both readings are correct on their own terms. The probability of backtest overfitting asks
+whether a strategy selected in sample continues to win out of sample. A persistent data
+defect continues to win, because it is present in both halves of the sample. To every
+overfitting diagnostic a stationary artefact and a real anomaly are the same object. This
+is a structural limitation of the entire family of tools and not a defect in any one of
+them.
+
+\subsection{A screen that requires no reference data}
+
+The comparison above required a second, trustworthy series. Most analysts do not have one.
+We therefore propose a test that uses only the series being examined.
+
+Under the null that a recorded open is an unbiased draw from the prices visited during the
+session, the open is equally likely to coincide with the session low as with the session
+high. Counting the two events gives an exact binomial test with no free parameters:
+\begin{equation}
+n_{\text{low}} \sim \mathrm{Binomial}\!\left(n_{\text{low}}+n_{\text{high}},\ \tfrac{1}{2}\right).
+\label{eq:binom}
+\end{equation}
+
+Table~\ref{tab:screen} applies Equation~\eqref{eq:binom} to eight series. It clears the
+exchange series at $p=0.788$ and flags the corrupted one at $p=3.7\times10^{-13}$.
+
+\begin{table}[H]
+\caption{The open location binomial screen of Equation~\eqref{eq:binom} applied to eight
+series. Mean position is the average location of the open within the session range, where
+0 is the low and 1 the high. The screen clears the series known to be sound and rejects the
+series known to be corrupt, using only that series' own open, high and low.}
+\label{tab:screen}
+\begin{tabularx}{\textwidth}{Lrrrr}
+\toprule
+\textbf{Series} & \textbf{At low} & \textbf{At high} & \textbf{Binomial $p$} & \textbf{Mean position} \\
+\midrule
+Dollar index futures, exchange & 64  & 60  & 0.788 & 0.499 \\
+Dollar index, free provider    & 204 & 82  & $3.68\times10^{-13}$ & 0.479 \\
+EURUSD, free provider          & 90  & 56  & 0.0061 & 0.501 \\
+GBPUSD, free provider          & 69  & 58  & 0.375  & 0.504 \\
+JPYUSD, free provider          & 125 & 103 & 0.164  & 0.489 \\
+CADUSD, free provider          & 66  & 52  & 0.231  & 0.506 \\
+CHFUSD, free provider          & 62  & 44  & 0.098  & 0.505 \\
+SEKUSD, free provider          & 44  & 45  & 1.000  & 0.508 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Two honest qualifications. The screen also flags EURUSD at $p=0.0061$, which barely
+survives a Bonferroni correction across the eight tests at a threshold of 0.00625. We
+independently established that these spot series are date stamped one trading day late,
+which is consistent with a true positive, but we cannot prove it is not a multiplicity
+artefact. And the screen is validated here against exactly one instrument with a known
+good reference. It is a promising diagnostic and not an established one.
+
+We note also that the mean position of the open within the range, at 0.479 for the
+corrupted series against 0.499 for the exchange series, is a weak discriminator. The count
+of extremes carries the information, not the average location.
+
+\section{An Undeclared Search Space}\label{sec:search}
+
+The second failure needs no bad data. A regime conditioned cross sectional currency
+strategy, in which six currencies are ranked each quarter and the two weakest are held with
+a sign set by the 126 day momentum of the dollar index, reports a Sharpe ratio of 0.72 with
+a Newey--West $t$ statistic of 2.78 and $p=0.0055$ on Federal Reserve spot data.
+
+Three defects in the committed implementation had to be corrected first. The pandas call
+\texttt{to\_period('2Q')} silently returns quarterly periods, so the reported semiannual
+row was a byte identical duplicate of the quarterly row. The grid loop was wrapped in a
+bare exception handler, which concealed that the annual frequency alias had been renamed
+between pandas versions, so every annual configuration was silently discarded. The
+construction \texttt{np.where(mom < 0, 1, -1)} maps a missing value to $-1$, so the first
+126 sessions, in which no momentum can yet be computed, were traded as though the dollar
+were rising; correcting this alone moves the headline Sharpe ratio from 0.54 to 0.46. And
+the constituent price files are date stamped one trading day late relative to the index file.
+
+Table~\ref{tab:declared} reports what happens when the search space is declared in full.
+The original account reported six configurations. Frequency, cross sectional slice,
+cardinality, the regime filter and the momentum lookback are all free parameters and
+enumerating them gives 144 configurations on the tradeable five currency panel and 216 on
+the six currency panels.
+
+\begin{table}[H]
+\caption{Multiple testing over the declared search space. The strategy is a self financing
+long and short book, so the correct null is zero excess return; the committed code tested
+against a long dollar position, which is shown for comparison. The number after each
+universe is the count of currencies in it. No configuration survives the stepwise procedure
+in any universe once the full search is declared.}
+\label{tab:declared}
+\begin{tabularx}{\textwidth}{Lrrrrrrr}
+\toprule
+ & & & \multicolumn{2}{c}{\textbf{Null: zero}} & \multicolumn{2}{c}{\textbf{Null: long dollar}} & \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+\textbf{Universe} & \textbf{Configs} & \textbf{Sharpe} & \textbf{RC $p$} & \textbf{SPA $p$} & \textbf{RC $p$} & \textbf{SPA $p$} & \textbf{DSR} \\
+\midrule
+Exchange futures, 5 & 144 & 0.458 & 0.2333 & 0.3833 & 0.6730 & 0.7647 & 0.227 \\
+Futures plus krona, 6 & 216 & 0.498 & 0.2203 & 0.2830 & 0.4373 & 0.5933 & 0.217 \\
+Federal Reserve spot, 6 & 216 & 0.722 & 0.0963 & 0.1570 & 0.3173 & 0.4727 & 0.613 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The deflated Sharpe ratio is a confidence level and must exceed 0.95. It reaches 0.613 at
+best. The expected maximum Sharpe ratio under the null across 144 configurations is
+$+0.654$, above the $+0.458$ actually observed on tradeable instruments. No universe now
+clears a conventional threshold on any test.
+
+The configuration is also a spike rather than a plateau. Holding everything else at the
+reported values on the tradeable five currency panel and moving one parameter at a time,
+the regime lookback gives $-0.319$ with no overlay, $+0.136$ at 63 days, $+0.458$ at 126
+days and $+0.259$ at 252 days. The rebalance frequency gives $-0.234$ daily, $-0.081$
+weekly, $+0.047$ monthly, $+0.458$ quarterly, $+0.112$ semiannually and $+0.456$ annually.
+Only two of six frequencies are materially positive and the neighbours of the reported
+lookback lose most of the effect, which describes a noisy surface rather than a mechanism.
+
+Finally, an ensemble that holds every configuration in a family at equal weight selects
+nothing and therefore requires no correction. Averaging the net returns of the 36 regime
+signed configurations in the bottom slice, which charges each member its own full turnover
+and so is conservative, gives a Sharpe ratio of 0.148 with $p=0.57$. Widening the ensemble
+to all 108 regime signed configurations gives $-0.160$ with $p=0.53$.
+
+\section{A Correctly Specified Search}\label{sec:exhaustive}
+
+\subsection{Validating the harness before believing it}
+
+Before running any search we validated the evaluation code itself, because a paper about
+invalid backtests should demonstrate that its own backtest is valid.
+Table~\ref{tab:harness} lists the ten checks. The most important is the first. Weights
+formed from the same day's realised return, applied without the one period shift, must
+produce an absurd Sharpe ratio; if they do not, the shift is broken and nothing downstream
+means anything.
+
+\begin{table}[H]
+\caption{Validation of the evaluation harness. All ten checks pass; the eight rows below
+group the four turnover and statistic checks into two lines. The lookahead injection is the
+critical one, because the harness must be demonstrably capable of detecting a strategy that
+cheats.}
+\label{tab:harness}
+\begin{tabularx}{\textwidth}{Lr}
+\toprule
+\textbf{Check} & \textbf{Result} \\
+\midrule
+Perfect foresight weights applied without the shift & Sharpe $+24.34$ \\
+The same weights applied through the harness        & Sharpe $-0.11$ \\
+One extra lag applied to 14 real families           & none collapses \\
+Full search on simulated zero drift returns, RC $p$ & 0.20, 0.07, 0.69, 0.38 \\
+Observed best of $N$ on noise against theory        & 0.823 against 0.846 \\
+Sharpe, Newey--West $t$, PSR, cost arithmetic       & reproduced to machine precision \\
+Buy and hold turnover; daily sign flipper turnover  & 0.00; exactly 2.0 per session \\
+Winning configuration rebuilt from first principles & maximum difference $0.0\mathrm{e}{+}00$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{The search and the noise ceiling}
+
+We evaluated 1,312 configurations built from published specifications: time series momentum
+\citep{moskowitz2012}, cross sectional currency momentum \citep{menkhoff2012}, carry
+\citep{lustig2011,koijen2018}, value \citep{asness2013}, moving average rules
+\citep{brock1992}, channel breakouts, open interest growth \citep{hongyogo2012} and
+volatility scaling \citep{moreiramuir2017}, each crossed with four rebalance frequencies,
+the regime overlay at three lookbacks and with or without volatility targeting. Costs are
+charged at one basis point per unit of turnover.
+
+The natural benchmark is not zero. It is the Sharpe ratio this same search attains on
+returns that contain no predictable structure. We construct that benchmark by resampling
+the actual returns in blocks using the stationary bootstrap of
+\citet{politisromano1994}, which preserves the marginal distributions, the fat tails and
+the cross sectional correlation while destroying the time series structure a signal could
+exploit, then running the entire search on the resampled panel. We call the resulting
+maximum the \emph{noise ceiling}. It is not a new statistic. It is a Monte Carlo reality
+check expressed in the units a practitioner reads.
+
+\begin{table}[H]
+\caption{The correctly specified search against its noise ceiling. The ceiling is the best
+Sharpe ratio the identical 1,312 configuration search attains on block bootstrapped
+returns, averaged over six resamples. No configuration on the real data exceeds it and
+every correction agrees.}
+\label{tab:ceiling}
+\begin{tabularx}{\textwidth}{Lr}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Best configuration on the real data, net of costs & $+0.653$ \\
+Noise ceiling, Gaussian null                      & $+0.752$ \\
+Noise ceiling, block bootstrap of the real returns& $+0.712$ \\
+Expected best of 1,312 under the null             & $+0.865$ \\
+Configurations exceeding the ceiling              & \textbf{0 of 1,312} \\
+\midrule
+White Reality Check $p$                           & 0.659 \\
+Hansen SPA $p$                                    & 0.773 \\
+Romano--Wolf survivors                            & 0 \\
+Deflated Sharpe ratio (needs $>0.95$)             & 0.203 \\
+Harvey--Liu adjusted $p$, Bonferroni and BHY      & 1.000, 1.000 \\
+Probability of backtest overfitting               & 0.556 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:ceiling} gives the result. The best configuration found in fifteen years of
+exchange data is \emph{below} what the same search finds in random data. The holdout is
+consistent: selecting on 2011 to 2018 and evaluating once on 2019 to 2025, the in sample
+winner ranks 163rd of 1,312 out of sample and the top ten in sample configurations average a
+Sharpe ratio of $+0.019$.
+
+Family ensembles, which select nothing, are reported in Table~\ref{tab:families}. Not one
+is significant in either direction.
+
+\begin{table}[H]
+\caption{Family ensembles, equal weight within each family, costed in weight space so that
+trades offsetting across members are not charged. Selecting nothing means no correction is
+required, so these are the fair test of whether a family of ideas has value.}
+\label{tab:families}
+\begin{tabularx}{\textwidth}{Lrr@{\hskip 2em}Lrr}
+\toprule
+\textbf{Family} & \textbf{Sharpe} & \textbf{$p$} & \textbf{Family} & \textbf{Sharpe} & \textbf{$p$} \\
+\midrule
+Cross sectional momentum & $+0.218$ & 0.37 & Time series momentum & $-0.214$ & 0.37 \\
+Value                    & $+0.204$ & 0.43 & Volume               & $-0.232$ & 0.37 \\
+Carry                    & $+0.135$ & 0.59 & Breakout             & $-0.289$ & 0.23 \\
+Reversal                 & $+0.133$ & 0.58 & Moving average       & $-0.341$ & 0.16 \\
+Open interest            & $+0.094$ & 0.72 & Cross sectional reversal & $-0.360$ & 0.14 \\
+\midrule
+\multicolumn{3}{l}{All 1,312 configurations} & & $-0.176$ & 0.48 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Is Anything Here Profitable?}\label{sec:structure}
+
+An exhaustive search that finds nothing invites the objection that the search was the wrong
+instrument. We therefore also proceeded analytically. The structure of the data is
+unambiguous. The first order autocorrelation of returns is between $-0.004$ and $+0.033$,
+variance ratios lie between 0.83 and 1.02 and an autoregression of returns on their own
+lag gives $R^2$ between 0.0000 and 0.0011. The same autoregression on log realised
+volatility gives $R^2$ between 0.966 and 0.972. Volatility is roughly three orders of
+magnitude more forecastable than direction.
+
+If direction cannot be forecast then only a genuine risk premium or a relationship true by
+construction can pay. We tested both. The dollar index is an exact deterministic function
+of its six constituents and the index future shares an expiry code with the five currency
+futures on 98.2 per cent of sessions, so a matched synthetic basket is a no arbitrage
+relationship. It is also efficiently priced: the convergence trade returns a Sharpe ratio
+of $+0.09$ gross and $-0.20$ at one basis point per leg, because six legs are required
+against a spread whose daily change has a standard deviation of five basis points.
+
+Carry is the more serious candidate. The roll gap between the expiring and deferred
+contract is the market's own quoted interest differential, which we validated against
+Federal Reserve interbank differentials to within 0.43 percentage points per currency. On
+the fifteen year futures panel it returns a Sharpe ratio of 0.377 and the mechanism
+verifies: of the 1.34 per cent annual return, 1.10 per cent is the differential actually
+held and 0.23 per cent is spot movement, which is the forward premium puzzle behaving as
+described. Table~\ref{tab:carry} shows why we do not claim it.
+
+\begin{table}[H]
+\caption{Term structure carry on two samples. The futures panel begins in December 2010,
+immediately after the 2008 carry drawdown. Extending the sample to April 2002 using
+Federal Reserve spot and OECD interbank rates for all six constituents reverses the sign.}
+\label{tab:carry}
+\begin{tabularx}{\textwidth}{Lrr}
+\toprule
+\textbf{Sample} & \textbf{Currencies} & \textbf{Sharpe} \\
+\midrule
+Futures panel, 2011 to 2025            & 5 & $+0.377$ \\
+Federal Reserve spot, 2002 to 2026     & 6 & $-0.249$ \\
+\midrule
+\multicolumn{3}{l}{\textit{Sub periods of the long sample}} \\
+2002 to 2007 & 6 & $+0.418$ \\
+2008 to 2013 & 6 & $-0.760$ \\
+2014 to 2019 & 6 & $-0.246$ \\
+2020 to 2026 & 6 & $-0.022$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The canonical factor set on the long sample gives carry $-0.249$, momentum $+0.028$ and
+value $+0.096$, with an equal risk combination of $-0.085$, against a noise ceiling whose
+ninetieth percentile is $+0.41$. Volatility targeting, the one quantity that is
+forecastable, changes the Sharpe ratio by $-0.009$ on average across seven series over 27
+years and improves three of them, which is inside the bootstrap null. What it does deliver
+is a reduction in the volatility of realised volatility from 0.025 to 0.015. That is risk
+control and not return generation.
+
+We report no profitable strategy. The reason is structural rather than a failure of effort.
+There is no directional predictability, the only candidate risk premium in this universe is
+negative over the full available sample and five to six highly correlated currencies with a
+common factor explaining 54.8 per cent of variance cannot support a cross sectional
+strategy.
+
+\section{A Reporting Protocol}\label{sec:protocol}
+
+Three additions, none expensive.
+
+\textbf{Screen the inputs.} Report the binomial statistic of Equation~\eqref{eq:binom}, the
+frequency with which the open equals the previous close and the count of sessions
+violating the open, high, low, close ordering. These cost one pass over the data and would
+have stopped the first failure before any strategy was run.
+
+\textbf{Declare the whole search.} Report every parameter that was varied and the total
+count of configurations evaluated, including those discarded. Report the ensemble across
+each family alongside the selected configuration, since an ensemble selects nothing and
+needs no correction.
+
+\textbf{Report the noise ceiling.} Run the complete search once on block bootstrapped
+returns and report the best Sharpe ratio it produces. Any result below that number is
+indistinguishable from luck at that search size. In this study the ceiling was 0.71 to 0.75
+for the 1,312 configuration search, 0.38 for a five strategy carry family and 0.41 for the
+canonical factor set. Every real result fell below its own ceiling.
+
+\section{Limitations}\label{sec:limits}
+
+The evidence is one currency complex and two vendors. Nothing here generalises to free data
+as a category or to this vendor across other instruments. The mechanism behind the defect
+is inferred rather than observed: a stale print, a first electronic tick and a misfielded
+session extreme are all consistent with what we see and we cannot inspect the vendor's
+pipeline. The commercial series is itself a redistributor rather than the exchange and its
+closing field is a last price whose settlement status we could not confirm. The screen is
+validated against a single instrument. The noise ceiling is a presentation of an existing
+idea rather than a new statistic. Finally, the absence of a profitable strategy is a
+statement about six daily G10 series over fifteen to twenty seven years and not about
+foreign exchange markets in general; emerging market carry, options and intraday data all
+lie outside what we can test.
+
+\section{Conclusions}
+
+Two failures sit outside the reach of the standard defence of a backtest. A corrupted input
+is not merely invisible to the overfitting diagnostics, it is actively certified by them,
+because a stationary data defect persists out of sample exactly as a real anomaly does. An
+undeclared search space causes the correction to be applied to the wrong denominator and a
+strategy reporting $t=3.09$ can fail every test once the full search is stated. Both
+failures are cheap to detect. A one line binomial test on the location of the open catches
+the first and a single run of the complete search on block bootstrapped returns catches the
+second, because it tells the analyst what their own search produces on data that contains
+nothing.
+
+\authorcontributions{Conceptualization, A.M. and E.P.; methodology, A.M.; software, A.M.;
+validation, A.M.; writing, A.M. and E.P.; supervision, E.P. All authors have read and agreed
+to the published version of the manuscript.}
+\funding{This research received no external funding.}
+\dataavailability{All code and the derived data required to reproduce every number in this
+paper will be deposited in a public repository on acceptance and are available to reviewers
+and to the editor on request in the interim. Federal Reserve H.10 and OECD interbank series
+are publicly available through FRED. The exchange sourced futures data are commercial and
+are subject to the vendor's redistribution terms.}
+\conflictsofinterest{The authors declare no conflict of interest.}
+
+\begin{thebibliography}{99}
+\bibitem[Asness et al.(2013)]{asness2013} Asness, C.S.; Moskowitz, T.J.; Pedersen, L.H.
+Value and Momentum Everywhere. \emph{J. Finance} \textbf{2013}, \emph{68}, 929--985.
+
+\bibitem[Bailey and Lopez de Prado(2014)]{baileylopez2014} Bailey, D.H.; Lopez de Prado, M.
+The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and
+Non-Normality. \emph{J. Portf. Manag.} \textbf{2014}, \emph{40}, 94--107.
+
+\bibitem[Bailey et al.(2017)]{bailey2017} Bailey, D.H.; Borwein, J.; Lopez de Prado, M.;
+Zhu, Q.J. The Probability of Backtest Overfitting. \emph{J. Comput. Finance} \textbf{2017},
+\emph{20}, 39--69.
+
+\bibitem[Brock et al.(1992)]{brock1992} Brock, W.; Lakonishok, J.; LeBaron, B. Simple
+Technical Trading Rules and the Stochastic Properties of Stock Returns. \emph{J. Finance}
+\textbf{1992}, \emph{47}, 1731--1764.
+
+\bibitem[Hansen(2005)]{hansen2005} Hansen, P.R. A Test for Superior Predictive Ability.
+\emph{J. Bus. Econ. Stat.} \textbf{2005}, \emph{23}, 365--380.
+
+\bibitem[Harvey and Liu(2015)]{harveyliu2015} Harvey, C.R.; Liu, Y. Backtesting.
+\emph{J. Portf. Manag.} \textbf{2015}, \emph{42}, 13--28.
+
+\bibitem[Hong and Yogo(2012)]{hongyogo2012} Hong, H.; Yogo, M. What Does Futures Market
+Interest Tell Us about the Macroeconomy and Asset Prices? \emph{J. Financ. Econ.}
+\textbf{2012}, \emph{105}, 473--490.
+
+\bibitem[Ince and Porter(2006)]{inceporter2006} Ince, O.S.; Porter, R.B. Individual Equity
+Return Data from Thomson Datastream: Handle with Care! \emph{J. Financ. Res.} \textbf{2006},
+\emph{29}, 463--479.
+
+\bibitem[Koijen et al.(2018)]{koijen2018} Koijen, R.S.J.; Moskowitz, T.J.; Pedersen, L.H.;
+Vrugt, E.B. Carry. \emph{J. Financ. Econ.} \textbf{2018}, \emph{127}, 197--225.
+
+\bibitem[Lustig et al.(2011)]{lustig2011} Lustig, H.; Roussanov, N.; Verdelhan, A. Common
+Risk Factors in Currency Markets. \emph{Rev. Financ. Stud.} \textbf{2011}, \emph{24},
+3731--3777.
+
+\bibitem[Menkhoff et al.(2012)]{menkhoff2012} Menkhoff, L.; Sarno, L.; Schmeling, M.;
+Schrimpf, A. Currency Momentum Strategies. \emph{J. Financ. Econ.} \textbf{2012},
+\emph{106}, 660--684.
+
+\bibitem[Moreira and Muir(2017)]{moreiramuir2017} Moreira, A.; Muir, T.
+Volatility-Managed Portfolios. \emph{J. Finance} \textbf{2017}, \emph{72}, 1611--1644.
+
+\bibitem[Moskowitz et al.(2012)]{moskowitz2012} Moskowitz, T.J.; Ooi, Y.H.; Pedersen, L.H.
+Time Series Momentum. \emph{J. Financ. Econ.} \textbf{2012}, \emph{104}, 228--250.
+
+\bibitem[Newey and West(1987)]{neweywest1987} Newey, W.K.; West, K.D. A Simple, Positive
+Semi-Definite, Heteroskedasticity and Autocorrelation Consistent Covariance Matrix.
+\emph{Econometrica} \textbf{1987}, \emph{55}, 703--708.
+
+\bibitem[Politis and Romano(1994)]{politisromano1994} Politis, D.N.; Romano, J.P. The
+Stationary Bootstrap. \emph{J. Am. Stat. Assoc.} \textbf{1994}, \emph{89}, 1303--1313.
+
+\bibitem[Romano and Wolf(2005)]{romanowolf2005} Romano, J.P.; Wolf, M. Stepwise Multiple
+Testing as Formalized Data Snooping. \emph{Econometrica} \textbf{2005}, \emph{73},
+1237--1282.
+
+\bibitem[White(2000)]{white2000} White, H. A Reality Check for Data Snooping.
+\emph{Econometrica} \textbf{2000}, \emph{68}, 1097--1126.
+\end{thebibliography}
+
+\end{document}

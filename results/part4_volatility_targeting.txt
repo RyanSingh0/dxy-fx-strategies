@@ -1,0 +1,38 @@
+====================================================================================================
+VOLATILITY TARGETING ,  1999-01-06 .. 2026-08-21 (6929 sessions, 27 years)
+====================================================================================================
+   Does scaling by forecast vol raise the Sharpe ratio? Sharpe is scale-invariant,
+   so any improvement must come from TIMING the exposure, not from leverage.
+
+   series           raw SR vol-mgd SR    change  raw MaxDD  vmg MaxDD
+   DXY               0.064      0.055    -0.009      -41.1%     -53.0%
+   EURUSD            0.043      0.072    +0.029      -39.9%     -39.3%
+   GBPUSD           -0.031     -0.021    +0.009      -49.3%     -46.4%
+   JPYUSD           -0.080     -0.112    -0.032      -53.8%     -56.1%
+   CADUSD            0.085     -0.008    -0.094      -37.2%     -51.6%
+   CHFUSD            0.243      0.310    +0.068      -29.4%     -22.1%
+   SEKUSD            0.003     -0.029    -0.033      -48.6%     -43.7%
+
+   mean Sharpe change across the seven series: -0.009
+   series improved: 3 of 7
+
+   the same on the 2011-2025 futures window, for comparison with earlier results:
+      dollar raw Sharpe +0.240 -> vol-managed +0.344
+
+====================================================================================================
+IS THE IMPROVEMENT REAL, OR AN ARTEFACT OF FAT TAILS?
+====================================================================================================
+   Null: vol targeting adds nothing. Bootstrap the return series in blocks (which
+   destroys volatility clustering but keeps the marginal distribution) and re-apply.
+   observed Sharpe gain on the dollar        : -0.009
+   gain on block-bootstrapped returns        : mean -0.013, sd 0.058, 90th pct +0.055
+   -> the gain is within what the null produces
+
+====================================================================================================
+WHAT IT DOES AND DOES NOT DO
+====================================================================================================
+   mean leverage 1.25 | leverage range 0.36 - 3.00
+   realised vol: raw 7.64% -> managed 8.60%  (target 8.00%)
+   vol of realised 21d vol: raw 0.025 -> managed 0.015  (this is the real benefit)
+   worst day: raw -4.32% -> managed -4.07%
+   total return: raw +5.6% -> managed +3.0%

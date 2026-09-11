@@ -1,0 +1,31 @@
+========================================================================================================
+CANONICAL FX FACTORS ,  2002-04-01 .. 2026-08-21 | 6116 sessions | 6 currencies
+========================================================================================================
+   factor                                       Sharpe   TotRet%        t        p  turn/yr
+   CARRY  (3M interbank differential)           -0.249     -22.0    -1.27   0.2051      0.5
+   MOMENTUM (12-month, skip last month)          0.028       0.7     0.15   0.8840     24.3
+   VALUE  (5-year reversal, AMP 2013)            0.096       7.3     0.49   0.6262      9.6
+
+   correlation between the factors:
+                                      CARRY  (3M interbank differential)  MOMENTUM (12-month, skip last month)  VALUE  (5-year reversal, AMP 2013)
+CARRY  (3M interbank differential)                                 1.000                                -0.249                               0.274
+MOMENTUM (12-month, skip last month)                              -0.249                                 1.000                              -0.455
+VALUE  (5-year reversal, AMP 2013)                                 0.274                                -0.455                               1.000
+
+   COMBINED, equal risk                         -0.085      -9.2    -0.43   0.6669
+   CARRY + VALUE only                           -0.096     -10.1    -0.50   0.6151
+
+========================================================================================================
+SUB-PERIODS of the combined portfolio
+========================================================================================================
+   2002-2007  Sharpe +0.046  TotRet    +0.5%  t +0.11  p 0.9134
+   2008-2013  Sharpe -0.169  TotRet    -5.5%  t -0.43  p 0.6695
+   2014-2019  Sharpe -0.062  TotRet    -2.1%  t -0.15  p 0.8806
+   2020-2026  Sharpe -0.116  TotRet    -2.3%  t -0.31  p 0.7591
+
+========================================================================================================
+NOISE CEILING (5 candidates: 3 factors + 2 combinations)
+========================================================================================================
+   -0.11  +0.33  +0.13  +0.21  -0.01  +0.45  +0.15  +0.03  +0.40  +0.20
+   ceiling mean +0.180 | 90th pct +0.410 | max +0.455
+   best observed on real data: +0.096

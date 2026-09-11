@@ -1,0 +1,51 @@
+================================================================================================
+A.  COVERAGE, ROLL STRUCTURE, LIQUIDITY
+================================================================================================
+sym    pair       rows first        last         contracts    med vol     med OI
+E6     EURUSD     3800 2010-12-01   2025-12-30         62     210654     506363
+B6     GBPUSD     3800 2010-12-01   2025-12-30         62     100600     200614
+D6     CADUSD     3800 2010-12-01   2025-12-30         62      73076     147366
+J6     JPYUSD     3800 2010-12-01   2025-12-30         62     129214     199429
+S6     CHFUSD     3800 2010-12-01   2025-12-30         62      25734      50822
+DX     DXY        3889 2010-12-01   2025-12-30         62      22410      50648
+
+roll days (session where the front symbol changes):
+   E6    61 rolls | roll-day price gap: mean +0.364%  sd 0.571%  |max| 1.358%
+   B6    61 rolls | roll-day price gap: mean +0.094%  sd 0.677%  |max| 2.003%
+   D6    61 rolls | roll-day price gap: mean -0.074%  sd 0.518%  |max| 1.659%
+   J6    61 rolls | roll-day price gap: mean +0.462%  sd 0.727%  |max| 2.295%
+   S6    61 rolls | roll-day price gap: mean +0.518%  sd 0.511%  |max| 1.620%
+   DX    61 rolls | roll-day price gap: mean +0.032%  sd 0.621%  |max| 1.477%
+
+================================================================================================
+B.  QUOTE CONVENTION AND ALIGNMENT vs FEDERAL RESERVE H.10
+================================================================================================
+pair        fut med   spot med     ratio meandiff% | return corr at lag -1 / 0 / +1
+EURUSD      1.14445    1.14080    1.0014    +0.168 | +0.134  +0.876  +0.004
+GBPUSD      1.34230    1.34160    1.0002    +0.037 | +0.125  +0.898  +0.026
+CADUSD      0.77130    0.77137    1.0000    +0.007 | +0.135  +0.853  -0.023
+JPYUSD      0.00907    0.00906    1.0013    +0.233 | +0.099  +0.893  -0.006
+CHFUSD      1.07220    1.07078    1.0020    +0.263 | +0.179  +0.895  +0.031
+
+================================================================================================
+C.  OPEN-LOCATION BINOMIAL SCREEN ON EACH EXCHANGE FUTURES SERIES
+================================================================================================
+Under the null that a recorded open is an unbiased draw from the session,
+P(open = daily low) = P(open = daily high).
+series       at low  at high   binomial p     open loc
+EURUSD fut       21       20            1        0.500
+GBPUSD fut       41       21      0.01513        0.502
+CADUSD fut       40       50       0.3428        0.509
+JPYUSD fut       35       44       0.3682        0.495
+CHFUSD fut       37       44       0.5052        0.509
+DXY fut          64       60       0.7877        0.499
+
+================================================================================================
+D.  INTERNAL CONSISTENCY
+================================================================================================
+   EURUSD   OHLC violations  0.00% | open==prev close  4.16% | zero-range days  0.00% | missing 0
+   GBPUSD   OHLC violations  0.00% | open==prev close  4.45% | zero-range days  0.00% | missing 0
+   CADUSD   OHLC violations  0.00% | open==prev close  3.89% | zero-range days  0.00% | missing 0
+   JPYUSD   OHLC violations  0.00% | open==prev close  4.55% | zero-range days  0.00% | missing 0
+   CHFUSD   OHLC violations  0.00% | open==prev close  5.45% | zero-range days  0.00% | missing 0
+   DXY      OHLC violations  0.00% | open==prev close  1.34% | zero-range days  0.03% | missing 0

@@ -1,67 +1,106 @@
-# DXY & FX Trading Strategy Research
-> 📰 Short paper accepted — **Traders Magazine (est. 1982)**, 2026
-> Research conducted at Boston University under Prof. Eugene Pinsky
+# Two Blind Spots in Backtest Validation
 
-## Overview
-A two-track quantitative research project on the DXY U.S. Dollar Index and
-6 major FX pairs (EUR, GBP, JPY, CAD, CHF, SEK) using **15 years of daily OHLC
-data (2010–2025)**, covering both cross-sectional momentum and intraday sub-period strategies.
+Replication code and data for the paper *Two Blind Spots in Backtest Validation: Evidence
+from the U.S. Dollar Index* (Meena and Pinsky).
 
-**Dataset:** 3,906 trading days (2010-12-20 → 2025-12-18), downloaded via yfinance,
-validated (0 duplicates, 0 text contamination), USD-direction aligned, 6 rows removed
-where >3 instruments had missing data on the same day.
+Modern backtest validation defends against one failure, that too many strategies were
+tried. This repository documents two failures that defence cannot see, using the U.S.
+Dollar Index and its constituent currency futures.
 
----
+1. **A corrupted input.** A free data source records session opening prices with a stale
+   print defect that manufactures an overnight anomaly of Sharpe -1.36. The anomaly is
+   absent from exchange futures on the same instrument. The overfitting diagnostics do not
+   miss the artefact, they certify it: the probability of backtest overfitting is 0.02 for
+   the false result and 0.77 for the correct data.
+2. **An undeclared search.** A strategy reporting Sharpe 0.79 with a Newey-West *t* of
+   3.09 fails every correction once its full 216 configuration search is declared instead
+   of the six configurations originally reported.
 
-## Track 1 — Cross-Sectional Momentum (data_processing.ipynb)
-Ranks all 6 FX pairs by past returns across 7 horizons (1d, 5d, 10d, 21d, 63d, 126d, 252d),
-then goes long the Top-3 and short the Bottom-3.
+The repository then runs a correctly specified search of 1,312 published specifications
+and finds none exceeding the **noise ceiling**, the Sharpe ratio the identical search
+attains on block bootstrapped returns.
 
-| Horizon | Top-3 Final Value | Bottom-3 Final Value | B&H Final Value | Bottom-3 Sharpe |
-|---------|------------------|---------------------|----------------|----------------|
-| Daily | $75.55 | **$165.27** | $121.03 | **0.48** |
-| Quarterly | **$124.37** | $111.16 | $121.03 | 0.13 |
+## Headline numbers
 
-> Bottom-3 (short losers) at daily rebalancing: **+65% return** vs **+21% buy-and-hold**.
+| Result | Value |
+|---|---|
+| Overnight Sharpe, free provider series | -1.36 (*p* < 0.0001) |
+| Overnight Sharpe, exchange futures | +0.25 (*p* = 0.33) |
+| Probability of backtest overfitting, artefact | 0.016 to 0.028 |
+| Probability of backtest overfitting, correct data | 0.765 to 0.779 |
+| Open location binomial screen, artefact | *p* = 3.68e-13 |
+| Open location binomial screen, exchange | *p* = 0.788 |
+| Best of 1,312 configurations, net of costs | +0.653 |
+| Noise ceiling, block bootstrap | +0.712 |
+| Configurations above the ceiling | **0 of 1,312** |
 
----
+## Layout
 
-## Track 2 — Intraday Sub-Period Strategies (DXY_24.ipynb)
-Backtested **24 intraday strategies** by decomposing each trading day into:
-- **Overnight** (previous close → today's open)
-- **Daytime** (today's open → today's close)
-
-Position rules: Long, Short, Cash, Inertia (momentum), Reversal.
-
-### DXY vs. Buy & Hold
-| Strategy | Overnight | Daytime | Final Balance | Sharpe | Max Drawdown |
-|----------|-----------|---------|--------------|--------|-------------|
-| **#7 — Best (0 bps)** | Short | Long | **$318.80** | **1.06** | −13.1% |
-| #20 — Best (1 bps) | Short | Reversal | $171.96 | 0.52 | −36.4% |
-| **Buy & Hold (benchmark)** | — | — | **$121.72** | **0.22** | −15.3% |
-
-Best intraday strategy: **+219% cumulative return vs. +22% buy-and-hold** (Sharpe 1.06 vs 0.22).
-
----
-
-## Files
-| File | Description |
-|------|-------------|
-| `data_processing.ipynb` | Data download (yfinance), cleaning, return layers, momentum strategy |
-| `DXY_24.ipynb` | 24 intraday sub-period strategies on DXY + 6 FX pairs |
-| `results/*_0bps.xlsx` | Full strategy × asset table (0 bps cost) |
-| `results/*_1bps.xlsx` | Full strategy × asset table (1 bps cost) |
-| `results/*_2bps.xlsx` | Full strategy × asset table (2 bps cost) |
-
-## How to Run
-```bash
-pip install -r requirements.txt
-# Step 1: data pipeline + momentum
-jupyter notebook data_processing.ipynb
-# Step 2: intraday strategies
-jupyter notebook DXY_24.ipynb
+```
+data/          futures, free provider and FRED inputs; see data/README.md
+src/
+  paths.py                 all file locations resolve here
+  data.py                  aligned panel, roll handling, integrity report
+  evaluate.py              the one period shift, Sharpe, HAC t, bootstrap, RC/SPA/RW, DSR, CSCV
+  signals.py               the 1,312 configuration search space
+  part1_data_defect/       the corrupted input and the screen
+  part2_declared_search/   the undeclared search space
+  part3_exhaustive/        harness validation, the full search, verification
+  part4_reasoned/          strategies built from the structure rather than enumerated
+results/       text output of every script
+paper/         main.tex and the MDPI layout emulation
+docs/          longer write-ups of each stage
 ```
 
-## Author
-Aryan Meena | [LinkedIn](https://linkedin.com/in/aryan-meena-32685415a) | araj7042@gmail.com
-Boston University, MS Applied Data Analytics
+## Reproducing
+
+```bash
+pip install -r requirements.txt
+./run_all.sh
+```
+
+Expect roughly 60 to 90 minutes. Every script writes to `results/`. Individual stages can
+be run on their own, for example:
+
+```bash
+cd src
+python3 part3_exhaustive/validate_harness.py   # run this first
+python3 part1_data_defect/exchange_battery.py
+```
+
+## Validate before you believe
+
+`src/part3_exhaustive/validate_harness.py` runs ten checks on the evaluation code itself
+and must pass before any result is trusted. The critical one is a deliberate lookahead
+injection: weights formed from the same day's realised return, applied without the one
+period shift, must produce an absurd Sharpe ratio. They give +24.34. Passed through the
+harness the same weights give -0.11. A harness that cannot detect a strategy that cheats
+cannot certify one that does not.
+
+The other nine cover leakage in each signal family, calibration on simulated zero drift
+data, agreement of the observed best of *N* with theory, independent recomputation of
+Sharpe, the Newey-West *t* statistic, the probabilistic Sharpe ratio and the cost
+arithmetic and turnover accounting.
+
+## The one thing worth taking away
+
+Run your complete search once on block bootstrapped returns and report the best Sharpe
+ratio it produces. Any real result below that number is indistinguishable from luck at
+your search size. Here the ceiling was 0.71 to 0.75 for the 1,312 configuration search,
+0.38 for a five strategy carry family and 0.41 for the canonical factor set. Every real
+result fell below its own ceiling.
+
+## Citation
+
+```bibtex
+@article{meena2026blindspots,
+  title   = {Two Blind Spots in Backtest Validation: Evidence from the U.S. Dollar Index},
+  author  = {Meena, Aryan and Pinsky, Eugene},
+  journal = {Risks},
+  year    = {2026}
+}
+```
+
+## License
+
+MIT for the code. The data carries the terms described in `data/README.md`.

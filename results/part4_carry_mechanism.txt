@@ -1,0 +1,72 @@
+============================================================================================================
+1.  MECHANISM, is the carry actually being EARNED, or given back in spot?
+============================================================================================================
+   For each currency: the implied carry it offers, the spot return it delivered,
+   and the sum. Under uncovered interest parity the two would cancel exactly.
+   pair          carry %/yr      spot %/yr     total %/yr UIP holds?
+   EURUSD            -1.42%         -1.85%         -3.27%         no
+   GBPUSD            -0.35%         -0.97%         -1.33%         no
+   CADUSD            +0.34%         -1.40%         -1.06%         no
+   JPYUSD            -1.81%         -5.50%         -7.31%         no
+   CHFUSD            -2.03%         +0.02%         -2.01%         no
+
+   Cross-sectionally: does a HIGHER offered carry come with a WORSE spot move
+   that cancels it (UIP), or not (the forward premium puzzle)?
+      regression of spot return on offered carry across the five currencies:
+         slope +0.529 (UIP predicts -1.00, the puzzle predicts around 0)  R2 0.064  p 0.681
+      -> a slope near zero means the carry is kept, not competed away.
+
+   Panel version, using time variation rather than five points:
+      next-quarter spot return on relative carry: slope +0.408 (t +1.16, p 0.2449)
+      -> UIP would give -1.0 here. A slope above -1 is the tradeable premium.
+
+============================================================================================================
+2.  DOLLAR CARRY, Lustig, Roussanov & Verdelhan (2014)
+============================================================================================================
+   average foreign-minus-US implied rate: mean -1.06%/yr, sd 1.69%, % of days foreign > US: 28%
+
+   strategy                                         Sharpe   TotRet%        t        p   MaxDD%  turn/yr
+   F1 dollar carry (sign of average carry)           0.127       9.6     0.51   0.6081    -17.7      2.7
+   F2 dollar carry, proportional sizing              0.210      21.5     0.86   0.3871    -21.0      5.3
+   F3 cross-sectional carry, smoothed                0.377      20.9     1.51   0.1321     -7.2      1.9
+   F4 cross-sectional carry, raw                     0.324      18.7     1.35   0.1772     -7.6      5.3
+   F5 cross-sectional + dollar carry, equal risk     0.340      18.5     1.34   0.1810     -7.3        -
+
+============================================================================================================
+3.  HOLDOUT
+============================================================================================================
+   strategy                                        IS Sharpe OOS Sharpe     OOS p   OOS ret%
+   F1 dollar carry (sign of average carry)             0.214      0.026    0.9429       -0.3
+   F2 dollar carry, proportional sizing                0.418      0.011    0.9752       -1.7
+   F3 cross-sectional carry, smoothed                  0.244      0.544    0.1284       13.1
+   F4 cross-sectional carry, raw                       0.093      0.647    0.0567       15.9
+   F5 cross-sectional + dollar carry, equal risk       0.321      0.362    0.3136        8.9
+
+============================================================================================================
+4.  COST TOLERANCE OF THE SURVIVORS
+============================================================================================================
+   F3 cross-sectional carry, smoothed
+         0 bp/unit turnover: Sharpe +0.382  TotRet   +21.2%
+         1 bp/unit turnover: Sharpe +0.377  TotRet   +20.9%
+         2 bp/unit turnover: Sharpe +0.371  TotRet   +20.5%
+         5 bp/unit turnover: Sharpe +0.355  TotRet   +19.5%
+        10 bp/unit turnover: Sharpe +0.328  TotRet   +17.8%
+        25 bp/unit turnover: Sharpe +0.247  TotRet   +12.9%
+        50 bp/unit turnover: Sharpe +0.112  TotRet    +5.1%
+   F1 dollar carry
+         0 bp/unit turnover: Sharpe +0.132  TotRet   +10.0%
+         1 bp/unit turnover: Sharpe +0.127  TotRet    +9.6%
+         2 bp/unit turnover: Sharpe +0.123  TotRet    +9.1%
+         5 bp/unit turnover: Sharpe +0.110  TotRet    +7.8%
+        10 bp/unit turnover: Sharpe +0.089  TotRet    +5.6%
+        25 bp/unit turnover: Sharpe +0.024  TotRet    -0.7%
+        50 bp/unit turnover: Sharpe -0.081  TotRet   -10.5%
+
+============================================================================================================
+5.  NOISE CEILING, matched to this six-strategy family
+============================================================================================================
+   best Sharpe on block-bootstrapped returns, 10 simulations:
+      +0.35  +0.02  +0.60  +0.34  +0.10  +0.33  -0.07  +0.30  +0.34  +0.34
+   ceiling: mean +0.265 | 90th percentile +0.378 | max +0.601
+   best observed on real data: +0.377 (F3 cross-sectional carry, smoothed)
+   -> within the range noise produces

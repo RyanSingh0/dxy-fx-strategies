@@ -1,0 +1,71 @@
+========================================================================================================
+V1.  ENSEMBLES REBUILT IN WEIGHT SPACE (offsetting trades never traded)
+========================================================================================================
+   family        n cfg    Sharpe   TotRet%        t        p     turn/yr  naive turn
+   BREAKOUT         96    -0.289     -12.3    -1.20   0.2291        28.9           -
+   CARRY            64     0.135       6.8     0.54   0.5892        12.1           -
+   MACROSS         128    -0.341     -15.4    -1.41   0.1573        11.0           -
+   OI              128     0.094       3.0     0.36   0.7159        28.7           -
+   REVERSAL        128     0.133       6.1     0.55   0.5807        13.7           -
+   TSMOM           128    -0.214     -11.0    -0.89   0.3731        13.7           -
+   VALUE            64     0.204       8.8     0.79   0.4283        10.2           -
+   VOLUME           64    -0.232     -11.7    -0.89   0.3723        25.3           -
+   XSMOM           256     0.218       9.2     0.90   0.3676        20.3           -
+   XSREV           256    -0.360     -14.9    -1.49   0.1375        20.3           -
+   ALL            1312    -0.176      -1.4    -0.70   0.4836         5.2           -
+
+   Note: averaging weights cuts the ensemble's traded turnover far below the sum of
+   its members', so this is the fair version of the ensemble result.
+
+========================================================================================================
+V2.  A HARDER NOISE CEILING, stationary bootstrap of the real returns
+========================================================================================================
+   Resampling actual returns in blocks preserves fat tails, skew and cross-sectional
+   correlation and destroys only the time-series structure a signal could exploit.
+   bootstrap 0: best net Sharpe over 1312 configurations = +0.753
+   bootstrap 1: best net Sharpe over 1312 configurations = +0.733
+   bootstrap 2: best net Sharpe over 1312 configurations = +0.888
+   bootstrap 3: best net Sharpe over 1312 configurations = +0.636
+   bootstrap 4: best net Sharpe over 1312 configurations = +0.630
+   bootstrap 5: best net Sharpe over 1312 configurations = +0.635
+   -> bootstrap noise ceiling: mean +0.712 (range +0.630 .. +0.888)
+   observed best on the REAL data: +0.653
+   configurations above the bootstrap ceiling: 0 of 1312
+
+========================================================================================================
+V3.  INDEPENDENT REBUILD OF THE WINNING CONFIGURATION
+========================================================================================================
+   target: XSMOM/xsmom126_k1/Q/reg126/vt  (harness Sharpe +0.652977)
+   independent rebuild Sharpe +0.652977 | max abs difference in daily returns 0.000e+00  MATCH
+
+========================================================================================================
+V4.  THE NEIGHBOURHOOD OF THE WINNER
+========================================================================================================
+   If the winner is an effect, nearby parameters should work too.
+   configuration                                     Sharpe
+   XSMOM/xsmom21_k1/Q/reg126/vt                      -0.208
+   XSMOM/xsmom21_k2/Q/reg126/vt                      -0.175
+   XSMOM/xsmom63_k1/Q/reg126/vt                       0.558
+   XSMOM/xsmom63_k2/Q/reg126/vt                       0.463
+   XSMOM/xsmom126_k1/Q/reg126/vt                      0.653
+   XSMOM/xsmom126_k2/Q/reg126/vt                      0.446
+   XSMOM/xsmom252_k1/Q/reg126/vt                      0.395
+   XSMOM/xsmom252_k2/Q/reg126/vt                      0.123
+   varying only the rebalance frequency of the winner:
+      freq D   Sharpe +0.013
+      freq W   Sharpe +0.220
+      freq M   Sharpe +0.437
+      freq Q   Sharpe +0.653
+   varying only the regime lookback:
+      overlay none    Sharpe -0.031
+      overlay reg63   Sharpe -0.121
+      overlay reg126  Sharpe +0.653
+      overlay reg252  Sharpe +0.110
+   varying only the momentum lookback:
+      lookback  21  Sharpe -0.208
+      lookback  63  Sharpe +0.558
+      lookback 126  Sharpe +0.653
+      lookback 252  Sharpe +0.395
+   with and without volatility targeting:
+      raw  Sharpe +0.480
+      vt   Sharpe +0.653

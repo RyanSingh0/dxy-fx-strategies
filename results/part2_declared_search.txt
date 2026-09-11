@@ -1,0 +1,172 @@
+========================================================================================================
+0.  BUG FIX CONFIRMATION
+========================================================================================================
+   pandas to_period('Q')  -> 60 periods
+   pandas to_period('2Q') -> 60 periods   <- identical, this was the duplicated row
+   explicit semiannual    -> 30 periods   <- the fix
+
+========================================================================================================
+1.  THE SEARCH SPACE, DECLARED IN FULL
+========================================================================================================
+   free parameters: rebalance frequency (5) x cross-section slice (3) x cardinality (3)
+                    x regime filter on/off and when on, momentum lookback (3)
+   configurations evaluated: 144   (the original implementation reported 6 of these)
+   A. exchange futures, 5 pairs (fully tradeable) kept 144, dropped  72
+         72 - universe too small for cardinality 3
+   B. exchange futures + FRED SEK, 6 pairs        kept 216, dropped   0
+   C. Federal Reserve H.10 spot, 6 pairs          kept 216, dropped   0
+   sessions: 3526   window 2012-01-03 .. 2025-12-30
+
+========================================================================================================
+2.  HEADLINE CONFIGURATION ACROSS THE THREE UNIVERSES
+     quarterly, bottom-2 by prior-quarter return, signed by the 126-day DXY regime
+========================================================================================================
+universe                                            End  Sharpe Sortino   MaxDD%    t_NW       p      DXY
+A. exchange futures, 5 pairs (fully tradeable)   157.39   0.458   0.718    -26.7    1.77  0.0765   132.80
+B. exchange futures + FRED SEK, 6 pairs          162.20   0.498   0.796    -24.4    1.90  0.0570   112.11
+C. Federal Reserve H.10 spot, 6 pairs            209.43   0.722   1.112    -21.6    2.78  0.0055   114.78
+
+========================================================================================================
+3.  IS 'QUARTERLY, BOTTOM-2, 126-DAY' A LUCKY CORNER? THE WHOLE GRID
+========================================================================================================
+
+   A. exchange futures, 5 pairs (fully tradeable)
+      best 0.626 | 90th pct 0.232 | median -0.129 | worst -0.565
+      top 5: Q/bottom/1/reg126 0.626 | M/bottom/1/reg63 0.524 | Q/bottom/1/reg252 0.463 | Y/bottom/2/reg126 0.456 | M/bottom/2/reg63 0.445
+      rank of the paper's configuration: 6 of 144
+
+   B. exchange futures + FRED SEK, 6 pairs
+      best 0.669 | 90th pct 0.323 | median -0.106 | worst -0.808
+      top 5: Q/bottom/1/reg126 0.669 | M/bottom/2/reg63 0.591 | Q/bottom/2/reg252 0.464 | Y/bottom/2/reg252 0.460 | Q/bottom/2/reg126 0.455
+      rank of the paper's configuration: 5 of 216
+
+   C. Federal Reserve H.10 spot, 6 pairs
+      best 0.745 | 90th pct 0.200 | median -0.069 | worst -0.539
+      top 5: Q/bottom/1/reg126 0.745 | Q/bottom/2/reg126 0.700 | Q/bottom/3/reg126 0.602 | Q/bottom/2/reg63 0.456 | M/bottom/1/reg63 0.451
+      rank of the paper's configuration: 2 of 216
+
+========================================================================================================
+4.  LOOKBACK AND CARDINALITY SENSITIVITY (futures, quarterly, bottom slice)
+========================================================================================================
+lookback   cardinality       End    Sharpe     p_NW
+63         1             114.62     0.146   0.5548
+63         2             111.51     0.136   0.5966
+63         3                nan       nan      nan
+126        1             208.48     0.595   0.0176
+126        2             157.39     0.458   0.0765
+126        3                nan       nan      nan
+252        1             170.76     0.463   0.0699
+252        2             125.54     0.259   0.3235
+252        3                nan       nan      nan
+
+   frequency sensitivity (bottom-2, 126-day):
+      D   End    75.63  Sharpe -0.234  p 0.3656
+      W   End    87.73  Sharpe -0.081  p 0.7575
+      M   End   100.94  Sharpe +0.047  p 0.8601
+      Q   End   157.39  Sharpe +0.458  p 0.0765
+      S   End   108.39  Sharpe +0.112  p 0.6554
+      Y   End   153.03  Sharpe +0.456  p 0.0733
+
+   momentum-calendar convention (an alignment choice the paper never states):
+      the DXY futures file has 3888 sessions; the five-pair panel has 3799.
+      universe  End   157.39  Sharpe +0.458  p 0.0765   <- lookback counted on the traded panel, the original convention
+      native    End   172.79  Sharpe +0.545  p 0.0352   <- lookback counted on the DXY series' own calendar
+
+========================================================================================================
+5.  MULTIPLE TESTING OVER THE FULL 144-CONFIGURATION SEARCH
+========================================================================================================
+   The book is self-financing long/short, so the null is zero excess return.
+   The original implementation tested against DXY buy-and-hold; both are shown.
+
+universe                                       null                   White RC p Hansen SPA  RW surv
+A. exchange futures, 5 pairs (fully tradeable) zero (correct)            0.2333    0.3833        0 
+                                               DXY buy-and-hold          0.6730    0.7647        0 
+B. exchange futures + FRED SEK, 6 pairs        zero (correct)            0.2203    0.2830        0 
+                                               DXY buy-and-hold          0.4373    0.5933        0 
+C. Federal Reserve H.10 spot, 6 pairs          zero (correct)            0.0963    0.1570        0 
+                                               DXY buy-and-hold          0.3173    0.4727        0 
+
+========================================================================================================
+6.  DEFLATED SHARPE OVER THE FULL SEARCH  (a confidence level; must exceed 0.95)
+========================================================================================================
+   A. exchange futures, 5 pairs (fully tradeable) PSR(0) 0.9601 | expected max Sharpe under the null +0.654 | DSR 0.2271 fail
+   B. exchange futures + FRED SEK, 6 pairs        PSR(0) 0.9684 | expected max Sharpe under the null +0.707 | DSR 0.2172 fail
+   C. Federal Reserve H.10 spot, 6 pairs          PSR(0) 0.9966 | expected max Sharpe under the null +0.646 | DSR 0.6125 fail
+
+========================================================================================================
+7.  BACKTEST OVERFITTING (CSCV)
+========================================================================================================
+   A. exchange futures, 5 pairs (fully tradeable) S=12  PBO 0.233  median OOS rank of IS winner 116/144
+                                                  S=16  PBO 0.276  median OOS rank of IS winner 111/144
+   B. exchange futures + FRED SEK, 6 pairs        S=12  PBO 0.236  median OOS rank of IS winner 160/216
+                                                  S=16  PBO 0.300  median OOS rank of IS winner 152/216
+   C. Federal Reserve H.10 spot, 6 pairs          S=12  PBO 0.194  median OOS rank of IS winner 201/216
+                                                  S=16  PBO 0.229  median OOS rank of IS winner 198/216
+
+========================================================================================================
+8.  FACTOR ATTRIBUTION, is this just dollar beta, carry, or plain FX momentum?
+========================================================================================================
+
+   A. exchange futures, 5 pairs (fully tradeable)
+      annualised alpha +4.27%  (t = +2.44, p = 0.0146)   R2 = 0.119
+      beta DOLLAR    -0.313  (t = -5.62, p = 0.0000)
+      beta CARRY     -0.038  (t = -0.90, p = 0.3668)
+      beta XSMOM     -0.160  (t = -2.41, p = 0.0161)
+
+   B. exchange futures + FRED SEK, 6 pairs
+      annualised alpha +4.43%  (t = +2.42, p = 0.0156)   R2 = 0.117
+      beta DOLLAR    -0.330  (t = -5.84, p = 0.0000)
+      beta CARRY     -0.119  (t = -2.86, p = 0.0042)
+      beta XSMOM     -0.079  (t = -1.23, p = 0.2177)
+
+   C. Federal Reserve H.10 spot, 6 pairs
+      annualised alpha +6.12%  (t = +3.18, p = 0.0015)   R2 = 0.074
+      beta DOLLAR    -0.275  (t = -4.19, p = 0.0000)
+      beta CARRY     -0.093  (t = -2.15, p = 0.0317)
+      beta XSMOM     -0.070  (t = -0.83, p = 0.4046)
+
+========================================================================================================
+9.  HOLDOUT AND WALK-FORWARD OVER THE FULL GRID
+========================================================================================================
+
+   A. exchange futures, 5 pairs (fully tradeable)
+      single selection on 2011-2018 -> M/bottom/1/reg63
+         IS Sharpe +0.775 -> OOS Sharpe +0.210  End  110.49  p 0.5904  OOS rank 22/144
+      annual re-selection, 11 OOS years: End   93.85 Sharpe -0.020 t -0.07 p 0.9475 | DXY End 115.15
+         configuration chosen: M/bottom/1/reg63 x8, Y/bottom/1/reg252 x1, Q/top/1/reg252 x1
+
+   B. exchange futures + FRED SEK, 6 pairs
+      single selection on 2011-2018 -> M/bottom/2/reg63
+         IS Sharpe +0.968 -> OOS Sharpe +0.187  End  107.71  p 0.6459  OOS rank 40/216
+      annual re-selection, 10 OOS years: End  119.44 Sharpe +0.284 t +0.84 p 0.4035 | DXY End  95.72
+         configuration chosen: M/bottom/2/reg63 x8, Q/bottom/1/reg126 x2
+
+   C. Federal Reserve H.10 spot, 6 pairs
+      single selection on 2011-2018 -> M/bottom/2/reg63
+         IS Sharpe +0.698 -> OOS Sharpe +0.170  End  106.82  p 0.6760  OOS rank 40/216
+      annual re-selection, 11 OOS years: End  123.32 Sharpe +0.330 t +0.95 p 0.3403 | DXY End  91.52
+         configuration chosen: M/bottom/2/reg63 x7, Q/bottom/1/reg126 x3, Y/top/2/reg252 x1
+
+========================================================================================================
+10. COSTS AND CAPACITY (futures, headline)
+========================================================================================================
+   DXY futures buy-and-hold End 125.24
+        0 bp/rebalance: End  157.39  Sharpe +0.458  p 0.0765  beats B&H
+        1 bp/rebalance: End  156.48  Sharpe +0.452  p 0.0801  beats B&H
+        2 bp/rebalance: End  155.57  Sharpe +0.447  p 0.0837  beats B&H
+        5 bp/rebalance: End  152.88  Sharpe +0.431  p 0.0956  beats B&H
+       10 bp/rebalance: End  148.51  Sharpe +0.404  p 0.1184  beats B&H
+       20 bp/rebalance: End  140.12  Sharpe +0.349  p 0.1765  beats B&H
+       50 bp/rebalance: End  117.64  Sharpe +0.186  p 0.4698  below B&H
+      100 bp/rebalance: End   87.80  Sharpe -0.077  p 0.7651  below B&H
+   break-even cost (Sharpe -> 0): 85 bp per rebalance
+
+========================================================================================================
+11. RISK PROFILE AND CRISIS BEHAVIOUR (futures, headline)
+========================================================================================================
+   Sharpe 0.458 | Sortino 0.718 | ann vol 7.4% | MaxDD -26.7% | skew +0.38 | kurtosis 7.4
+   correlation with the dollar: -0.312
+      2015 CHF de-peg      strategy   -6.12%   dollar   +8.80%
+      2020 COVID           strategy   +0.29%   dollar   +0.38%
+      2022 dollar surge    strategy  -12.38%   dollar   +6.92%
+      2025                 strategy  +18.44%   dollar   -6.95%

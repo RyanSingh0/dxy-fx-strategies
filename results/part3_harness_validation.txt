@@ -1,0 +1,64 @@
+====================================================================================================
+1.  LOOKAHEAD DETECTION, can the harness catch a strategy that cheats?
+====================================================================================================
+   perfect foresight, correctly shifted by the harness : Sharpe   -0.107
+   the same weights applied WITHOUT the shift          : Sharpe  +24.338
+   -> harness detects the leak (unshifted absurd, shifted ordinary): PASS
+
+====================================================================================================
+2.  NO LEAK IN THE REAL FAMILIES, one extra day of lag must not destroy a signal
+====================================================================================================
+   family                     Sharpe     +1 lag      ratio
+   tsmom21                    -0.113     -0.407       3.62
+   rev21                       0.113      0.407       3.62
+   xsmom21_k1                 -0.378     -0.463       1.23
+   xsrev21_k1                  0.378      0.463       1.23
+   xsmom21_k2                 -0.474     -0.559       1.18
+   xsrev21_k2                  0.474      0.559       1.18
+   tsmom63                     0.149      0.015       0.10
+   rev63                      -0.149     -0.015       0.10
+   xsmom63_k1                 -0.036     -0.133        n/a
+   xsrev63_k1                  0.036      0.133        n/a
+   xsmom63_k2                  0.033     -0.091        n/a
+   xsrev63_k2                 -0.033      0.091        n/a
+   tsmom126                   -0.094     -0.221       2.36
+   rev126                      0.094      0.221       2.36
+   -> no family collapses under one extra lag: PASS
+
+====================================================================================================
+3.  NULL CALIBRATION, run the whole search on returns that cannot be predicted
+====================================================================================================
+   declared search space: 1312 configurations
+   seed 0: configs 1312 | best Sharpe +0.877 | theoretical best-of-N +0.816 | RC p 0.198 | SPA p 0.166 | RW survivors 0
+   seed 1: configs 1312 | best Sharpe +0.937 | theoretical best-of-N +0.915 | RC p 0.068 | SPA p 0.072 | RW survivors 0
+   seed 2: configs 1312 | best Sharpe +0.719 | theoretical best-of-N +0.834 | RC p 0.688 | SPA p 0.686 | RW survivors 0
+   seed 3: configs 1312 | best Sharpe +0.761 | theoretical best-of-N +0.820 | RC p 0.376 | SPA p 0.146 | RW survivors 0
+   -> mean RC p on pure noise 0.333 (must not be small): PASS
+   -> observed best-of-N 0.823 vs theory 0.846: PASS
+
+====================================================================================================
+4.  STATISTIC CROSS-CHECKS, recomputed independently
+====================================================================================================
+   Sharpe: harness -0.0937322057 | manual -0.0937322057  PASS
+   Newey-West t (Bartlett, 8 lags): harness -0.380810 | manual -0.380810  PASS
+   cost arithmetic net = gross - turnover x cost: max abs diff 0.00e+00  PASS
+   PSR against zero: harness 0.357770 | manual 0.357770  PASS
+
+====================================================================================================
+5.  TURNOVER SANITY
+====================================================================================================
+   buy-and-hold total turnover after inception : 0.00e+00  PASS
+   daily sign-flipper mean turnover per session: 2.000000 (expect 2.0)  PASS
+
+====================================================================================================
+VALIDATION SUMMARY: 10 checks, 0 failed
+   lookahead detection                    PASS
+   no leak in families                    PASS
+   null: RC not spuriously small          PASS
+   null: best-of-N matches theory         PASS
+   Sharpe                                 PASS
+   NW t                                   PASS
+   cost arithmetic                        PASS
+   PSR                                    PASS
+   turnover buy-and-hold                  PASS
+   turnover flipper                       PASS

@@ -1,0 +1,107 @@
+% VISUAL EMULATION of the MDPI class, geometry measured from published PDFs
+% (Risks 2026,14,84 and J.Risk Financial Manag. 2026,19,54). NOT official MDPI.
+\ProvidesPackage{mdpiemu}
+\RequirePackage[a4paper,left=56mm,right=10mm,top=20mm,bottom=20mm,
+                headsep=6mm,footskip=12mm,marginparwidth=40mm,marginparsep=4mm]{geometry}
+\RequirePackage{mathpazo}\RequirePackage[T1]{fontenc}
+\RequirePackage{amsmath,amssymb,booktabs,graphicx,float,enumitem,tabularx,multirow}
+\PassOptionsToPackage{table}{xcolor}
+\RequirePackage{xcolor,array,microtype,titlesec,lineno,changepage,ragged2e,marginnote}
+\RequirePackage[authoryear,round]{natbib}
+\RequirePackage{fancyhdr,lastpage,caption}
+\RequirePackage[colorlinks=true,allcolors=mdpilink]{hyperref}
+
+\definecolor{mdpilink}{RGB}{0,86,150}
+\providecommand{\mdjshort}{risks}\providecommand{\mdjfull}{Risks}
+\providecommand{\mdjabbrev}{Risks}\providecommand{\mdjurl}{https://www.mdpi.com/journal/risks}
+% no DOI is assigned before acceptance; kept only so the macro is defined
+\providecommand{\mdjdoi}{}
+\providecommand{\mdjcolor}{\definecolor{jc}{RGB}{197,32,84}}
+
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\RaggedLeft\arraybackslash}X}
+\newcolumntype{L}{>{\RaggedRight\arraybackslash}X}
+\newlength{\extralength}\setlength{\extralength}{46mm}
+\newlength{\fulllength}\setlength{\fulllength}{\dimexpr\textwidth+\extralength\relax}
+
+\captionsetup[figure]{font=small,labelfont=bf,labelsep=period,justification=justified,skip=4pt}
+\captionsetup[table]{font=small,labelfont=bf,labelsep=period,justification=justified,skip=4pt}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection.}{0.4em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\itshape}{\thesubsection.}{0.4em}{}
+\titlespacing*{\section}{0pt}{12pt}{5pt}\titlespacing*{\subsection}{0pt}{9pt}{3pt}
+
+\def\@mdtitle{}\def\@mdauthor{}\def\@mdaddr{}\def\@mdcorres{}
+\def\@mdabs{}\def\@mdkey{}\def\@mdnames{}\def\@mdjel{}
+\newcommand{\Title}[1]{\gdef\@mdtitle{#1}}
+\newcommand{\Author}[1]{\gdef\@mdauthor{#1}}
+\newcommand{\AuthorNames}[1]{\gdef\@mdnames{#1}}
+\providecommand{\address}{}\renewcommand{\address}[1]{\gdef\@mdaddr{#1}}
+\newcommand{\corres}[1]{\gdef\@mdcorres{#1}}
+\renewcommand{\abstract}[1]{\gdef\@mdabs{#1}}
+\newcommand{\keyword}[1]{\gdef\@mdkey{#1}}
+\newcommand{\JEL}[1]{\gdef\@mdjel{#1}}
+\newcommand{\firstpage}[1]{}\newcommand{\pubvolume}[1]{}\newcommand{\issuenum}[1]{}
+\newcommand{\articlenumber}[1]{}\newcommand{\pubyear}[1]{}\newcommand{\copyrightyear}[1]{}
+\newcommand{\datereceived}[1]{}\newcommand{\daterevised}[1]{}
+\newcommand{\dateaccepted}[1]{}\newcommand{\datepublished}[1]{}
+\newcommand{\orcidA}{}\newcommand{\orcidB}{}\newcommand{\BBA}{\&}
+\providecommand{\citeauthoryear}[2]{#1(#2)}
+\newcommand{\isAPAStyle}[2]{#1}\newcommand{\isChicagoStyle}[2]{#1}
+\newcommand{\isAPAandChicago}[2]{#2}
+\newcommand{\isPreprints}[2]{#2}
+\newcommand{\reftitle}[1]{}\renewcommand{\refname}{References}
+\newcommand{\PublishersNote}{}
+\newcommand{\mdback}[2]{\par\smallskip\noindent{\small\textbf{#1:} #2}\par}
+\newcommand{\authorcontributions}[1]{\mdback{Author Contributions}{#1}}
+\newcommand{\funding}[1]{\mdback{Funding}{#1}}
+\newcommand{\institutionalreview}[1]{\mdback{Institutional Review Board Statement}{#1}}
+\newcommand{\informedconsent}[1]{\mdback{Informed Consent Statement}{#1}}
+\newcommand{\dataavailability}[1]{\mdback{Data Availability Statement}{#1}}
+\newcommand{\acknowledgments}[1]{\mdback{Acknowledgments}{#1}}
+\newcommand{\conflictsofinterest}[1]{\mdback{Conflicts of Interest}{#1}}
+\newcommand{\abbreviations}[2]{\par\medskip\noindent{\small\textbf{#1}\par\smallskip #2}\par}
+
+\reversemarginpar
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\hspace*{-\extralength}\footnotesize Submitted to \textit{\mdjfull}}
+\fancyhead[R]{\footnotesize\thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\textcolor{mdpilink}{Manuscript submitted for review}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hspace*{-\extralength}\rule{\fulllength}{0.4pt}}
+
+\AtBeginDocument{%
+ \linenumbers
+ \thispagestyle{empty}
+ \noindent\hspace*{-\extralength}%
+ \begin{minipage}[t]{0.42\fulllength}\vspace{0pt}\raggedright
+   {\color{mdpilink}\fontsize{22}{24}\selectfont\textit{\textbf{\mdjshort}}}\\[1pt]
+   {\scriptsize\color{mdpilink}\mdjfull}
+ \end{minipage}\hfill
+ \begin{minipage}[t]{0.2\fulllength}\vspace{0pt}\raggedleft
+   \fbox{\textbf{\small MDPI}}
+ \end{minipage}
+ \par\vspace{12pt}
+ \noindent\hspace*{-\extralength}\begin{minipage}{\fulllength}\raggedright
+   {\itshape\normalsize Article}\par\vspace{4pt}
+   {\LARGE\bfseries\@mdtitle\par}\vspace{10pt}
+   {\large\@mdauthor\par}
+ \end{minipage}
+ \par\vspace{12pt}
+ {\footnotesize\@mdaddr\par}\vspace{2pt}
+ {\footnotesize *\quad\@mdcorres\par}\vspace{10pt}
+ \noindent\rule{\textwidth}{0.4pt}\par\vspace{6pt}
+ {\noindent\textbf{Abstract}\par\vspace{3pt}\small\@mdabs\par}\vspace{8pt}
+ {\small\noindent\textbf{Keywords:} \@mdkey\par}
+ \ifx\@mdjel\empty\else{\small\noindent\textbf{JEL Classification:} \@mdjel\par}\fi
+ \vspace{6pt}\noindent\rule{\textwidth}{0.4pt}\par\vspace{10pt}
+ % left margin metadata block, as in published MDPI papers
+ \marginnote{\footnotesize\raggedright
+   \textbf{Submitted manuscript}\par\vspace{6pt}
+   Academic Editor: to be assigned\par\vspace{4pt}
+   Submitted: \today\par
+   \vspace{6pt}\textbf{Copyright:} \copyright{} 2026 by the authors.
+   Submitted to \textit{\mdjfull} for possible open access publication under the
+   terms and conditions of the Creative Commons Attribution (CC BY) license.}[-30mm]
+}
+\AtEndDocument{\label{LastPage}}

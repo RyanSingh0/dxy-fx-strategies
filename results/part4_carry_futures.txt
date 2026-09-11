@@ -1,0 +1,47 @@
+================================================================================================================
+STRATEGY 5, built from the structure, not from a grid
+================================================================================================================
+
+A.  IS THE TERM-STRUCTURE CARRY SIGNAL SANE?
+   mean implied quarterly carry by currency (positive = earns carry when long):
+      EURUSD     -0.355% per quarter  (-1.42% annualised)
+      GBPUSD     -0.089% per quarter  (-0.35% annualised)
+      CADUSD     +0.084% per quarter  (+0.34% annualised)
+      JPYUSD     -0.452% per quarter  (-1.81% annualised)
+      CHFUSD     -0.509% per quarter  (-2.03% annualised)
+   cross-check against Federal Reserve 3-month interbank differentials:
+      EURUSD    futures-implied  -1.42%   interbank differential  -0.99%   diff -0.43
+      GBPUSD    futures-implied  -0.35%   interbank differential  -0.17%   diff -0.19
+      CADUSD    futures-implied  +0.34%   interbank differential  -0.09%   diff +0.42
+      JPYUSD    futures-implied  -1.81%   interbank differential  -1.48%   diff -0.33
+      CHFUSD    futures-implied  -2.03%   interbank differential  -1.80%   diff -0.23
+
+================================================================================================================
+RESULTS  (costs 1 bp per unit of turnover)
+================================================================================================================
+   strategy                                       Sharpe   TotRet%        t        p   MaxDD%  turn/yr
+   A1 carry, equal weight, k=2                     0.361      19.5     1.52   0.1274     -7.3      4.3 
+   A2 carry, equal weight, k=1                     0.233      18.0     0.95   0.3432    -11.8      6.1 
+   A3 carry, inverse-vol legs, k=2                 0.152       6.9     0.64   0.5234     -6.7      6.9 
+   B1 carry, vol-managed (target 8%)               0.137      10.4     0.57   0.5657    -11.5     14.9 
+   B2 carry, stand down in top-quintile vol        0.012      -0.0     0.05   0.9599     -7.3      9.5 
+   C basket convergence @ 0.0 bp/leg               0.090       1.1     0.35   0.7236     -4.3     25.6 
+   C basket convergence @ 0.5 bp/leg              -0.056      -0.8    -0.22   0.8275     -4.8     25.6 
+   C basket convergence @ 1.0 bp/leg              -0.201      -2.7    -0.79   0.4323     -5.2     25.6 
+   D vol-managed dollar                            0.336      34.0     1.32   0.1862    -14.4      8.6 
+      benchmark: long dollar, unmanaged            0.204      19.6     0.82   0.4113    -14.1      nan 
+
+================================================================================================================
+HOLDOUT, 2011-2018 in sample, 2019-2025 never used to choose anything
+================================================================================================================
+   strategy                                     IS Sharpe OOS Sharpe     OOS p OOS TotRet%
+   A1 carry, equal weight, k=2                      0.192     0.615    0.0661      13.4
+   A2 carry, equal weight, k=1                     -0.040     0.686    0.0462      22.1
+   A3 carry, inverse-vol legs, k=2                  0.066     0.282    0.3978       5.4
+   B1 carry, vol-managed (target 8%)                0.051     0.259    0.4389       9.4
+   B2 carry, stand down in top-quintile vol        -0.110     0.175    0.6118       2.8
+   C basket convergence                             0.292    -0.749    0.0431      -4.6
+   D vol-managed dollar                             0.323     0.351    0.3364      15.3
+      benchmark: long dollar                            -     0.191         -       7.7
+
+saved results/part4_carry_futures.pkl

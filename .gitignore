@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pkl
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/pg-*.png
+.ipynb_checkpoints/
+.DS_Store
+results/.ALLDONE

@@ -1,0 +1,52 @@
+============================================================================================
+0.  THE LEVEL OFFSET THAT INVALIDATED THE NAIVE SWAP
+============================================================================================
+close(free) - close(exchange): mean +0.0410  sd 0.1845  (index points)
+typical daily range, exchange : mean 0.6118  median 0.5450
+offset as a share of one day's range: 6.7%
+-> large enough that a cross-vendor price ratio is dominated by the offset.
+
+============================================================================================
+1.  OPEN LOCATION, WITH THE SAME-DAY OFFSET REMOVED
+============================================================================================
+position of the open inside the exchange daily range (0 = low, 1 = high):
+   exchange open                       mean 0.498   median 0.496
+   free open, offset NOT removed       mean 0.572   median 0.564   <- contaminated
+   free open, offset removed           mean 0.474   median 0.472
+
+share of sessions where the open lies OUTSIDE the exchange high-low range:
+   exchange open               0.00%
+   free open, offset removed   7.30%
+   (an open outside the true session range cannot be a traded price)
+
+============================================================================================
+2.  THE SWAP, DONE IN RETURN SPACE (scale free)
+============================================================================================
+Each row uses ONE vendor's price level throughout. Only the close-to-open
+return is transferred. Daytime is then the residual, so the 24h return is
+identical across rows by construction.
+
+                                      ON 100->    ON SR     ON p   DAY 100->   DAY SR    DAY p
+free 24h,     free overnight             61.68   -1.358   0.0000      197.35    0.700   0.0086
+free 24h,     EXCHANGE overnight        108.08    0.252   0.3280      112.62    0.151   0.5534
+exchange 24h, exchange overnight        108.08    0.252   0.3280      112.22    0.146   0.5668
+exchange 24h, FREE overnight             61.68   -1.358   0.0000      196.65    0.678   0.0103
+
+-> the overnight leg tracks whichever vendor's OPEN is used, on either
+   vendor's price level. The close series is not the source of the effect.
+
+============================================================================================
+3.  THE SESSIONS THAT CARRY IT, WITH THE OFFSET REMOVED
+============================================================================================
+  free open at its own LOW    n= 204 | offset-adjusted open sits at -0.073 of the exchange range | outside it  56.9%
+  free open at its own HIGH   n=  82 | offset-adjusted open sits at +0.994 of the exchange range | outside it  45.1%
+  all other sessions          n=3508 | offset-adjusted open sits at +0.494 of the exchange range | outside it   3.5%
+
+  free overnight return on those sessions:
+     open at own LOW    n= 204   -0.1659%/day
+     open at own HIGH   n=  82   -0.0319%/day
+     all others         n=3508   -0.0033%/day
+  exchange overnight return on the SAME sessions:
+     open at own LOW    n= 204   +0.0345%/day
+     open at own HIGH   n=  82   -0.0661%/day
+     all others         n=3508   +0.0019%/day

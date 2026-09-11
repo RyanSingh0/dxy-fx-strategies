@@ -1,0 +1,98 @@
+====================================================================================================
+A.  IS THE DIRECTION PREDICTABLE AT ALL?
+====================================================================================================
+   pair         ac(1)    ac(2)    ac(5)   ac(21) |      VR(5)     VR(21)
+   EURUSD      0.0051  -0.0105   0.0063   0.0383 |      0.978      0.869
+   GBPUSD      0.0172  -0.0170  -0.0314   0.0309 |      0.998      0.845
+   CADUSD     -0.0033  -0.0099  -0.0051   0.0041 |      0.959      0.912
+   JPYUSD     -0.0037  -0.0076   0.0035  -0.0082 |      0.982      1.011
+   CHFUSD      0.0328  -0.0184  -0.0193  -0.0089 |      1.021      0.826
+   Ljung-Box(10) on the average pair return: p = 0.2360
+
+====================================================================================================
+B.  IS THE VARIANCE PREDICTABLE?
+====================================================================================================
+   pair       ac(1) |r|  ac(5) |r|  ac(21)|r| | Ljung-Box(10) on r^2
+   EURUSD        0.1094     0.0974     0.0999 | p = 3.76e-63
+   GBPUSD        0.1576     0.1168     0.0378 | p = 5.85e-42
+   CADUSD        0.1162     0.1034     0.0878 | p = 6.65e-84
+   JPYUSD        0.1370     0.0987     0.0670 | p = 8.23e-40
+   CHFUSD        0.1342     0.0928     0.0626 | p = 0.253
+
+   predictability of tomorrow's realised vol from today's (R^2 of a simple AR(1) on log vol):
+      EURUSD    R2 = 0.972   (direction R2 for comparison: 0.0000)
+      GBPUSD    R2 = 0.966   (direction R2 for comparison: 0.0003)
+      CADUSD    R2 = 0.967   (direction R2 for comparison: 0.0000)
+      JPYUSD    R2 = 0.971   (direction R2 for comparison: 0.0000)
+      CHFUSD    R2 = 0.968   (direction R2 for comparison: 0.0011)
+
+====================================================================================================
+C.  THE DOLLAR FACTOR AND WHAT IS LEFT AFTER IT
+====================================================================================================
+   variance explained: PC1 54.8%  PC2 18.4%  PC3 11.2%  PC4 9.7%  PC5 5.9%
+   PC1 loadings: EURUSD -0.53  GBPUSD -0.47  CADUSD -0.40  JPYUSD -0.34  CHFUSD -0.47
+
+   after removing PC1, does the residual mean-revert?
+   pair      resid ac(1)      ac(5)     ac(21)
+   EURUSD        0.0133     0.0025    -0.0211
+   GBPUSD        0.0159    -0.0381     0.0125
+   CADUSD       -0.0211    -0.0005     0.0154
+   JPYUSD        0.0085     0.0032    -0.0145
+   CHFUSD        0.0446    -0.0192     0.0085
+
+   half-life of the cumulative residual (Ornstein-Uhlenbeck fit, trading days):
+      EURUSD    beta -0.00439  half-life 157.7
+      GBPUSD    beta -0.00174  half-life 397.0
+      CADUSD    beta -0.00390  half-life 177.3
+      JPYUSD    beta -0.00095  half-life 725.9
+      CHFUSD    beta -0.00419  half-life 164.9
+
+====================================================================================================
+D.  THE IDENTITY, DX FUTURES vs A MATCHED SYNTHETIC BASKET
+====================================================================================================
+   contract alignment (do DX and the currency futures roll on the same cycle?)
+      sessions where all five currency contracts share DX's expiry code: 98.2%
+         EURUSD   example codes: Z10, H11, M11, U11
+         GBPUSD   example codes: Z10, H11, M11, U11
+         CADUSD   example codes: Z10, H11, M11, U11
+         JPYUSD   example codes: Z10, H11, M11, U11
+         CHFUSD   example codes: Z10, H11, M11, U11
+         DX       example codes: Z10, H11, M11, U11
+
+   log(DX futures) - weighted log(basket of five currency futures):
+      mean +4.00582 | sd 0.00701 | min +3.99115 | max +4.02548
+      in index points at DXY=100: sd 0.7011 pts, range 3.4336 pts
+      daily CHANGE in the spread: sd 0.000621 (6.21 bp), ac(1) -0.117
+      ADF on the spread: stat -2.028, p = 0.2744  -> NOT stationary
+      OU half-life of the spread: 168.3 trading days
+
+      NOTE: SEK carries weight 0.042 and has no futures contract, so part of this
+      spread is unhedged Swedish krona. Quantifying that next.
+      spread WITH the FRED krona leg included: sd 0.00109 (was 0.00701)
+      -> krona omission explains 98% of the spread variance
+      daily change of the krona-adjusted spread: sd 5.34 bp, ac(1) -0.207
+
+====================================================================================================
+E.  CALENDAR STRUCTURE
+====================================================================================================
+   dollar return by day of week (bp/day):
+      Mon    -0.67 bp  (n  711, t -0.46, p 0.649)
+      Tue    +0.98 bp  (n  781, t +0.65, p 0.518)
+      Wed    +0.41 bp  (n  778, t +0.26, p 0.799)
+      Thu    +0.22 bp  (n  765, t +0.13, p 0.900)
+      Fri    +1.82 bp  (n  765, t +1.09, p 0.275)
+
+   dollar return by position relative to month end (bp/day):
+      0 session(s) before month end:   +0.20 bp (n  181, t +0.06, p 0.951)
+      1 session(s) before month end:   -3.64 bp (n  181, t -1.20, p 0.230)
+      2 session(s) before month end:   +2.13 bp (n  181, t +0.67, p 0.501)
+      3 session(s) before month end:   -0.41 bp (n  181, t -0.13, p 0.893)
+      4 session(s) before month end:   -1.79 bp (n  181, t -0.58, p 0.564)
+      5 session(s) before month end:   +5.26 bp (n  181, t +1.61, p 0.108)
+
+   pair returns on the last session of the month (bp):
+      EURUSD      -2.43 bp (n 181, t -0.65, p 0.513)
+      GBPUSD      +6.48 bp (n 181, t +1.80, p 0.073)
+      CADUSD      +5.56 bp (n 181, t +1.60, p 0.112)
+      JPYUSD      -2.96 bp (n 181, t -0.57, p 0.572)
+      CHFUSD      +1.91 bp (n 181, t +0.48, p 0.632)

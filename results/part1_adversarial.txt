@@ -1,0 +1,71 @@
+============================================================================================
+A.  DOES THE EXCHANGE SERIES HAVE DEGENERATE PRINTS OF ITS OWN?
+============================================================================================
+
+exchange (n=3889)
+   open == previous close exactly :  1.34%
+   open == same-day close exactly :  0.15%
+   high == low (zero range)       :  0.03%
+   any OHLC violation (O or C outside [L,H]) :  0.00%
+   missing rows                   : 0
+   daily close return: sd 0.4457%  skew -0.00  kurt 4.8  |max| 2.39%
+   overnight return  : sd 0.1330%  |max| 1.62%
+
+free (n=3932)
+   open == previous close exactly :  6.84%
+   open == same-day close exactly :  1.04%
+   high == low (zero range)       :  0.15%
+   any OHLC violation (O or C outside [L,H]) :  0.00%
+   missing rows                   : 138
+   daily close return: sd 0.4364%  skew -0.07  kurt 4.7  |max| 2.37%
+   overnight return  : sd 0.1433%  |max| 2.09%
+
+============================================================================================
+B.  VARIANCE SHARE OF THE TWO SUB-PERIODS
+============================================================================================
+A plausible 24h split should put a substantial share in each leg.
+   exchange   overnight   8.9%   daytime  91.1%   (ann vol: ON 2.11%, DAY 6.75%)
+   free       overnight   9.8%   daytime  90.2%   (ann vol: ON 2.19%, DAY 6.66%)
+
+============================================================================================
+C.  IS THE FREE SERIES' DEFECT CONCENTRATED IN TIME?
+============================================================================================
+      lo  hi   ON%/yr  binom_p
+y                             
+2010   0   1  -0.1858   1.0000
+2011   0   2   2.8199   0.5000
+2012   4   1  -0.1625   0.3750
+2013  87   3 -26.1808   0.0000
+2014  13   4  -0.1667   0.0490
+2015  19   2   0.4784   0.0002
+2016  11   9  -3.0375   0.8238
+2017   8  10  -1.9622   0.8145
+2018   4   4  -3.9033   1.0000
+2019   7   6  -2.8885   1.0000
+2020   9  10  -4.5994   1.0000
+2021  12   4   0.1144   0.0768
+2022  10   5   0.2715   0.3018
+2023   7   5  -3.1620   0.7744
+2024  11   6  -0.4641   0.3323
+2025   2  10  -1.7855   0.0386
+
+-> a defect present in most years is systemic, not one bad patch.
+
+============================================================================================
+D.  WHAT THE PBO CONTRAST MEANS
+============================================================================================
+  free series      PBO = 0.016-0.028   median OOS rank of the IS winner = 24/24
+  exchange series  PBO = 0.765-0.779   median OOS rank of the IS winner =  6-8/24
+
+  The overfitting diagnostic says the FALSE result is highly stable and the TRUE
+  data is pure noise-fitting. Both readings are correct on their own terms. PBO
+  measures whether an in-sample winner keeps winning out of sample; it cannot
+  distinguish a persistent economic effect from a persistent data defect.
+  A stationary artefact is, to every overfitting diagnostic, indistinguishable
+  from a real anomaly.
+
+============================================================================================
+E.  THE NULL'S EXPECTED MAXIMUM vs THE OBSERVED MAXIMUM
+============================================================================================
+   exchange   observed max Sharpe +0.269 | null expected max +0.316 | observed BELOW null
+   free       observed max Sharpe +1.432 | null expected max +1.486 | observed BELOW null

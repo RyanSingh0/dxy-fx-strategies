@@ -1,0 +1,105 @@
+========================================================================================================
+STRATEGY 4, FULL SEARCH
+========================================================================================================
+sessions 3800 | 2010-12-01 .. 2025-12-30 | costs 1.0 bp per unit turnover
+   built 300/1312 (4s)
+   built 600/1312 (9s)
+   built 900/1312 (13s)
+   built 1200/1312 (19s)
+
+configurations successfully built: 1312
+
+========================================================================================================
+BENCHMARKS
+========================================================================================================
+   long DXY futures (dollar)            TotRet   +19.6%  Sharpe +0.204  t +0.82  p 0.4113
+   short DXY futures                    TotRet   -22.4%  Sharpe -0.204  t -0.82  p 0.4113
+   equal-weight long the five pairs     TotRet   -27.6%  Sharpe -0.306  t -1.23  p 0.2177
+   cash                                 TotRet    +0.0%  Sharpe   +nan  t  +nan  p nan
+
+========================================================================================================
+THE NOISE CEILING, what this same search yields on unpredictable returns
+========================================================================================================
+   simulation 0: best net Sharpe over 1312 configurations = +0.727
+   simulation 1: best net Sharpe over 1312 configurations = +0.868
+   simulation 2: best net Sharpe over 1312 configurations = +0.733
+   simulation 3: best net Sharpe over 1312 configurations = +0.703
+   simulation 4: best net Sharpe over 1312 configurations = +0.812
+   simulation 5: best net Sharpe over 1312 configurations = +0.666
+   -> noise ceiling: mean +0.752, range +0.666 to +0.868
+      Any strategy below this is indistinguishable from luck at this search size.
+
+========================================================================================================
+THE REAL SEARCH, net of costs, ranked
+========================================================================================================
+   best +0.653 | 99th +0.495 | 95th +0.349 | median -0.044 | worst -0.848
+   configurations above the noise ceiling (0.752): 0 of 1312 (0.0%)
+
+   configuration                                          Sharpe  TotRet%       t        p   turn/yr
+   XSMOM/xsmom126_k1/Q/reg126/vt                           0.653    157.9    2.59   0.0095      16.4
+   XSMOM/xsmom126_k2/M/reg126/vt                           0.593    110.0    2.37   0.0178      23.0
+   REVERSAL/rev126/Q/none/raw                              0.576     53.4    2.30   0.0215       3.1
+   XSMOM/xsmom21_k2/M/reg63/vt                             0.575    106.6    2.32   0.0204      44.7
+   BREAKOUT/don20/M/reg252/vt                              0.575    121.6    2.25   0.0248      22.8
+   XSMOM/xsmom126_k2/M/reg126/raw                          0.570     31.5    2.31   0.0212       7.4
+   XSREV/xsrev252_k2/Q/reg63/vt                            0.563     96.8    2.15   0.0319      14.4
+   XSMOM/xsmom63_k1/Q/reg126/vt                            0.558    134.0    2.17   0.0302      17.7
+   CARRY/carry_k1/Q/reg126/vt                              0.554    129.0    2.12   0.0341      12.8
+   REVERSAL/rev21/Q/reg252/vt                              0.522    105.2    2.08   0.0376      12.4
+   XSMOM/xsmom63_k2/M/reg126/vt                            0.516     96.6    2.03   0.0424      28.3
+   XSMOM/xsmom63_k2/Q/reg252/raw                           0.512     27.8    2.05   0.0405       4.1
+   XSMOM/xsmom21_k2/M/reg63/raw                            0.507     28.1    2.04   0.0409      15.1
+   XSMOM/xsmom63_k2/M/reg126/raw                           0.495     29.6    1.99   0.0463       9.3
+   REVERSAL/rev126/Q/none/vt                               0.488     93.6    1.94   0.0528      11.5
+
+========================================================================================================
+MULTIPLE TESTING OVER ALL 1312 CONFIGURATIONS
+========================================================================================================
+   vs zero (self-financing book)   White RC p = 0.6585 | Hansen SPA p = 0.7725 | Romano-Wolf survivors = 0
+   vs long DXY futures             White RC p = 0.8245 | Hansen SPA p = 0.9030 | Romano-Wolf survivors = 0
+
+   best configuration: XSMOM/xsmom126_k1/Q/reg126/vt
+      Sharpe +0.653 | PSR vs zero 0.9949
+      expected best-of-1312 Sharpe under the null: +0.865
+      DEFLATED SHARPE 0.2027  (needs > 0.95)  -> FAIL
+      Harvey-Liu: single p 0.0095 -> Bonferroni 1.0000, BHY 1.0000
+      CSCV probability of backtest overfitting: 0.556 (median OOS rank 586/1312)
+
+========================================================================================================
+FAMILY ENSEMBLES, nothing is selected, so nothing needs correcting
+========================================================================================================
+   family          n cfg    Sharpe   TotRet%        t        p vs ceiling
+   BREAKOUT           96    -0.384     -15.8    -1.60   0.1102     below
+   CARRY              64     0.129       6.4     0.51   0.6067     below
+   MACROSS           128    -0.384     -17.1    -1.59   0.1107     below
+   OI                128    -0.036      -1.7    -0.14   0.8889     below
+   REVERSAL          128     0.084       3.4     0.35   0.7278     below
+   TSMOM             128    -0.263     -13.2    -1.10   0.2735     below
+   VALUE              64     0.188       8.0     0.73   0.4649     below
+   VOLUME             64    -0.294     -14.4    -1.13   0.2580     below
+   XSMOM             256     0.126       4.9     0.52   0.6025     below
+   XSREV             256    -0.452     -18.2    -1.86   0.0622     below
+   ALL              1312    -0.820      -6.5    -3.26   0.0011     below
+
+========================================================================================================
+HOLDOUT, select on 2011-2018, evaluate on 2019-2025 exactly once
+========================================================================================================
+   in-sample winner: XSMOM/xsmom126_k1/Q/reg126/vt
+      IS Sharpe +0.890  ->  OOS Sharpe +0.372  (TotRet +26.0%, t +1.02, p 0.3085)
+      its rank out of sample: 163 of 1312
+   rank correlation of IS and OOS Sharpe across all 1312 configurations: rho +0.206 (p 4.527e-14)
+      -> a rho near zero means in-sample ranking carries no information about the future.
+   the top 10 in-sample configurations, out of sample: mean Sharpe +0.019 (median +0.003)
+   for comparison, the dollar over the holdout: Sharpe +0.191, TotRet +7.7%
+
+========================================================================================================
+COST SENSITIVITY OF THE BEST CONFIGURATION
+========================================================================================================
+    0.0 bp: Sharpe +0.669  TotRet  +164.4%  p 0.0079  below ceiling
+    0.5 bp: Sharpe +0.661  TotRet  +161.2%  p 0.0087  below ceiling
+    1.0 bp: Sharpe +0.653  TotRet  +157.9%  p 0.0095  below ceiling
+    2.0 bp: Sharpe +0.637  TotRet  +151.6%  p 0.0114  below ceiling
+    5.0 bp: Sharpe +0.590  TotRet  +133.6%  p 0.0192  below ceiling
+   10.0 bp: Sharpe +0.511  TotRet  +106.4%  p 0.0429  below ceiling
+
+saved results/part3_net_returns.pkl
