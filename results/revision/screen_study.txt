@@ -1,0 +1,90 @@
+A. ALTERNATIVE DEFINITIONS (delta = proximity to extreme as a fraction of the range)
+series         d=0.0  lo/hi        p   d=0.01 lo/hi        p   d=0.02 lo/hi        p   d=0.05 lo/hi        p   d=0.1  lo/hi        p
+DX exch         64/60     7.88e-01    84/80     8.15e-01   121/123    9.49e-01   262/261    1.00e+00   496/485    7.50e-01
+E6 exch         21/20     1.00e+00    45/39     5.86e-01    79/87     5.87e-01   219/204    4.96e-01   440/423    5.86e-01
+B6 exch         41/21     1.51e-02    58/37     3.96e-02    95/84     4.55e-01   229/224    8.51e-01   454/425    3.45e-01
+D6 exch         40/50     3.43e-01    57/61     7.83e-01    93/114    1.64e-01   195/239    3.89e-02   403/462    4.85e-02
+J6 exch         35/44     3.68e-01    57/62     7.14e-01   102/102    1.00e+00   252/243    7.19e-01   496/459    2.44e-01
+S6 exch         37/44     5.05e-01    53/55     9.23e-01    80/97     2.29e-01   214/225    6.33e-01   442/461    5.49e-01
+DXY free       204/82     3.68e-13   209/84     1.87e-13   243/122    2.32e-10   359/233    2.52e-07   576/451    1.07e-04
+EURUSD free     90/56     6.12e-03   126/88     1.13e-02   170/137    6.76e-02   290/242    4.15e-02   519/472    1.44e-01
+GBPUSD free     69/58     3.75e-01   102/88     3.46e-01   144/128    3.63e-01   278/268    7.00e-01   506/511    9.00e-01
+JPYUSD free    125/103    1.64e-01   196/164    1.02e-01   253/213    7.07e-02   396/361    2.17e-01   644/594    1.64e-01
+CADUSD free     66/52     2.31e-01   107/97     5.29e-01   148/142    7.69e-01   265/292    2.71e-01   467/513    1.51e-01
+CHFUSD free     62/44     9.82e-02   111/72     4.83e-03   146/106    1.39e-02   265/257    7.59e-01   492/505    7.04e-01
+SEKUSD free     44/45     1.00e+00    78/77     1.00e+00   106/106    1.00e+00   226/207    3.87e-01   445/425    5.19e-01
+
+F. YEAR BY YEAR, free DXY and exchange DX (exact definition)
+  2010  free   0/1   p=1.00e+00 | exch   0/1   p=1.000
+  2011  free   0/2   p=5.00e-01 | exch   5/4   p=1.000
+  2012  free   4/1   p=3.75e-01 | exch   6/1   p=0.125
+  2013  free  87/3   p=1.96e-22 | exch   1/1   p=1.000
+  2014  free  13/4   p=4.90e-02 | exch   5/4   p=1.000
+  2015  free  19/2   p=2.21e-04 | exch   4/4   p=1.000
+  2016  free  11/9   p=8.24e-01 | exch   4/7   p=0.549
+  2017  free   8/10  p=8.15e-01 | exch   1/4   p=0.375
+  2018  free   4/4   p=1.00e+00 | exch   1/6   p=0.125
+  2019  free   7/6   p=1.00e+00 | exch   8/8   p=1.000
+  2020  free   9/10  p=1.00e+00 | exch   1/3   p=0.625
+  2021  free  12/4   p=7.68e-02 | exch   7/3   p=0.344
+  2022  free  10/5   p=3.02e-01 | exch   8/3   p=0.227
+  2023  free   7/5   p=7.74e-01 | exch   2/5   p=0.453
+  2024  free  11/6   p=3.32e-01 | exch   7/0   p=0.016
+  2025  free   2/10  p=3.86e-02 | exch   4/6   p=0.754
+  free ex-2013: 117/79 p=8.06e-03
+
+C. FALSE ALARMS ON CLEAN EXCHANGE DATA
+  full sample p: {'DX': 0.7877, 'E6': 1.0, 'B6': 0.0151, 'D6': 0.3428, 'J6': 0.3682, 'S6': 0.5052}
+  30 three-year windows: share p<0.05 = 0.033, p<0.01 = 0.033, min p = 0.0075
+  free DXY windows: [(2011, 91, 6, 1.3331565348493778e-20), (2014, 43, 15, 0.000306947015546566), (2017, 19, 20, 1.0), (2020, 31, 19, 0.11892045255943628), (2023, 20, 21, 1.0)]
+
+B. MONTE CARLO SIZE UNDER MICROSTRUCTURE (n = 3,800 sessions, 1,000 samples each)
+  Gaussian random walk, continuous prices        size5 0.048 size1 0.003 share-at-extreme 0.068 P(low|ext) 0.502
+  + tick discreteness (DX tick 0.005)            size5 0.045 size1 0.018 share-at-extreme 0.072 P(low|ext) 0.502
+  + bid-ask bounce (prints at bid or ask, 1-tick spread) size5 0.030 size1 0.005 share-at-extreme 0.072 P(low|ext) 0.500
+  + fat tails (t, 3 df) and ticks                size5 0.040 size1 0.010 share-at-extreme 0.075 P(low|ext) 0.501
+  + stochastic volatility and ticks              size5 0.040 size1 0.013 share-at-extreme 0.074 P(low|ext) 0.501
+  + drift at sample mean and ticks               size5 0.037 size1 0.010 share-at-extreme 0.072 P(low|ext) 0.507
+  + drift at 10x sample mean and ticks           size5 0.588 size1 0.362 share-at-extreme 0.073 P(low|ext) 0.567
+  few intraday steps (K=20), ticks               size5 0.060 size1 0.010 share-at-extreme 0.258 P(low|ext) 0.500
+  asymmetric open: recorded 0.5 tick below       size5 1.000 size1 1.000 share-at-extreme 0.036 P(low|ext) 1.000
+  asymmetric open: recorded 1 tick below         size5 1.000 size1 1.000 share-at-extreme 0.044 P(low|ext) 1.000
+
+D. POWER: DEFECTS INJECTED INTO THE CLEAN EXCHANGE DX SERIES (500 injections per cell)
+  open displaced downward, low repaired  rate   0.5%  power5 0.000 power1 0.000  mean overnight SR +0.211  share |t|>1.96 0.000
+  open displaced downward, low repaired  rate   1.0%  power5 0.000 power1 0.000  mean overnight SR +0.153  share |t|>1.96 0.000
+  open displaced downward, low repaired  rate   2.0%  power5 0.000 power1 0.000  mean overnight SR +0.036  share |t|>1.96 0.000
+  open displaced downward, low repaired  rate   3.5%  power5 0.034 power1 0.000  mean overnight SR -0.133  share |t|>1.96 0.000
+  open displaced downward, low repaired  rate   5.0%  power5 0.294 power1 0.008  mean overnight SR -0.303  share |t|>1.96 0.000
+  session low written into open field    rate   0.5%  power5 0.396 power1 0.028  mean overnight SR +0.075  share |t|>1.96 0.000
+  session low written into open field    rate   1.0%  power5 0.998 power1 0.936  mean overnight SR -0.110  share |t|>1.96 0.000
+  session low written into open field    rate   2.0%  power5 1.000 power1 1.000  mean overnight SR -0.459  share |t|>1.96 0.334
+  session low written into open field    rate   3.5%  power5 1.000 power1 1.000  mean overnight SR -0.928  share |t|>1.96 1.000
+  session low written into open field    rate   5.0%  power5 1.000 power1 1.000  mean overnight SR -1.343  share |t|>1.96 1.000
+  stale open = previous close            rate   0.5%  power5 0.000 power1 0.000  mean overnight SR +0.268  share |t|>1.96 0.000
+  stale open = previous close            rate   1.0%  power5 0.000 power1 0.000  mean overnight SR +0.267  share |t|>1.96 0.000
+  stale open = previous close            rate   2.0%  power5 0.000 power1 0.000  mean overnight SR +0.267  share |t|>1.96 0.000
+  stale open = previous close            rate   3.5%  power5 0.000 power1 0.000  mean overnight SR +0.264  share |t|>1.96 0.000
+  stale open = previous close            rate   5.0%  power5 0.000 power1 0.000  mean overnight SR +0.266  share |t|>1.96 0.000
+  stale open on up-gaps only             rate   0.5%  power5 0.000 power1 0.000  mean overnight SR +0.245  share |t|>1.96 0.000
+  stale open on up-gaps only             rate   1.0%  power5 0.000 power1 0.000  mean overnight SR +0.220  share |t|>1.96 0.000
+  stale open on up-gaps only             rate   2.0%  power5 0.000 power1 0.000  mean overnight SR +0.170  share |t|>1.96 0.000
+  stale open on up-gaps only             rate   3.5%  power5 0.000 power1 0.000  mean overnight SR +0.094  share |t|>1.96 0.000
+  stale open on up-gaps only             rate   5.0%  power5 0.004 power1 0.000  mean overnight SR +0.019  share |t|>1.96 0.000
+  symmetric noise, 20% of range          rate   0.5%  power5 0.000 power1 0.000  mean overnight SR +0.269  share |t|>1.96 0.000
+  symmetric noise, 20% of range          rate   1.0%  power5 0.000 power1 0.000  mean overnight SR +0.267  share |t|>1.96 0.000
+  symmetric noise, 20% of range          rate   2.0%  power5 0.000 power1 0.000  mean overnight SR +0.270  share |t|>1.96 0.000
+  symmetric noise, 20% of range          rate   3.5%  power5 0.000 power1 0.000  mean overnight SR +0.265  share |t|>1.96 0.000
+  symmetric noise, 20% of range          rate   5.0%  power5 0.000 power1 0.000  mean overnight SR +0.261  share |t|>1.96 0.000
+  open outside range, 71% below / 29% above rate   0.5%  power5 0.000 power1 0.000  mean overnight SR +0.169  share |t|>1.96 0.000
+  open outside range, 71% below / 29% above rate   1.0%  power5 0.004 power1 0.000  mean overnight SR +0.074  share |t|>1.96 0.000
+  open outside range, 71% below / 29% above rate   2.0%  power5 0.206 power1 0.018  mean overnight SR -0.099  share |t|>1.96 0.000
+  open outside range, 71% below / 29% above rate   3.5%  power5 0.722 power1 0.370  mean overnight SR -0.333  share |t|>1.96 0.120
+  open outside range, 71% below / 29% above rate   5.0%  power5 0.942 power1 0.740  mean overnight SR -0.529  share |t|>1.96 0.568
+  baseline exchange overnight SR +0.269, t 1.04
+
+E. ALTERNATIVE SESSION AGGREGATION
+  DXY free  W bars: n=788  at low 25  at high 9  p=0.00904
+  DXY free  M bars: n=181  at low 4  at high 2  p=0.688
+  DX exch   W bars: n=788  at low 8  at high 3  p=0.227
+  DX exch   M bars: n=181  at low 2  at high 0  p=0.5

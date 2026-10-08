@@ -1,0 +1,2 @@
+spot change only (as in Table)   configs 216 | headline Sharpe 0.722 t 2.78 p 0.0055 | best 0.745 | RC 0.0963 SPA 0.1570 RW 0 | DSR 0.612 (E[max] 0.646)
+total return                     configs 216 | headline Sharpe 0.780 t 3.02 p 0.0025 | best 0.803 | RC 0.0470 SPA 0.0877 RW 0 | DSR 0.678 (E[max] 0.657)

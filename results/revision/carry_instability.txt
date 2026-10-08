@@ -1,0 +1,39 @@
+STEPWISE RECONCILIATION (linear cross-sectional carry, one-year smoothed signal, 1 bp)
+   (0) Spot change only, six currencies, 2002-2026 (first submission) Sharpe -0.249  t -1.27  p 0.205  n 6116
+   (1) Spot plus interest differential, six currencies, 2002-2026     Sharpe +0.019  t +0.09  p 0.925  n 6116
+   (2) Same, restricted to the futures window 2010-12 to 2025-12      Sharpe +0.059  t +0.23  p 0.817  n 3771
+   (3) Same window, five currencies (krona dropped)                   Sharpe -0.004  t -0.02  p 0.987  n 3771
+   (4) Futures returns, OECD interbank signal                         Sharpe +0.128  t +0.50  p 0.620  n 3800
+   (5) Futures returns, roll-implied signal (first submission)        Sharpe +0.377  t +1.51  p 0.132  n 3800
+/home/claude/repo/dxy-fx-strategies/src/revision/carry_instability.py:66: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  cm = pd.concat([s3.rename("spot5"), s4.rename("fut_oecd"), s5.rename("fut_roll")], axis=1).dropna()
+   correlations in the common window:
+           spot5  fut_oecd  fut_roll
+spot5     1.000     0.808     0.585
+fut_oecd  0.808     1.000     0.726
+fut_roll  0.585     0.726     1.000
+   average cross-sectional correlation of the two carry weight vectors: 0.722
+
+SUB-PERIOD INSTABILITY, long spot sample, HAC Wald test of equal means
+   long spot sample (total return): Wald 7.25, df 3, p 0.064
+      spot TR 2002-2007 Sharpe +0.952 t +2.23 p 0.026
+      spot TR 2008-2013 Sharpe -0.626 t -1.62 p 0.106
+      spot TR 2014-2019 Sharpe -0.070 t -0.17 p 0.865
+      spot TR 2020-2026 Sharpe +0.380 t +1.02 p 0.306
+   mechanism (long sample): differential earned +1.02%/yr, spot -0.95%/yr, total +0.08%/yr
+   futures panel (2011-14, 15-18, 19-22, 23-25): Wald 1.21, p 0.750
+      futures 2011-2014 Sharpe +0.184
+      spot5   2011-2014 Sharpe +0.035
+      futures 2015-2018 Sharpe +0.295
+      spot5   2015-2018 Sharpe -0.442
+      futures 2019-2022 Sharpe +0.277
+      spot5   2019-2022 Sharpe -0.018
+      futures 2023-2025 Sharpe +0.842
+      spot5   2023-2025 Sharpe +0.931
+
+SMALL-FAMILY NOISE CEILINGS, 1,000 stationary-bootstrap replications (mean block 21)
+   carry variants on total returns: [ 0.12   0.019  0.1   -0.02   0.169]
+   carry_long     observed best +0.169 | ceiling mean +0.121 (MC s.e. 0.006) | q90 +0.358 q95 +0.421 | Monte Carlo p 0.398 | first-10 mean +0.107
+   canonical factors on total returns: {'c': 0.019, 'm': 0.063, 'v': 0.097, 'comb': 0.122, 'cv': 0.072}
+   factors_long   observed best +0.122 | ceiling mean +0.174 (MC s.e. 0.005) | q90 +0.371 q95 +0.432 | Monte Carlo p 0.624 | first-10 mean +0.215
+   carry_futures  observed best +0.377 | ceiling mean +0.221 (MC s.e. 0.006) | q90 +0.470 q95 +0.538 | Monte Carlo p 0.211 | first-10 mean +0.265

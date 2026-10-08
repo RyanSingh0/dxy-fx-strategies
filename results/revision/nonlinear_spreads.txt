@@ -1,0 +1,16 @@
+(a) NONLINEAR AND CONDITIONAL PREDICTABILITY
+series    BDS2 raw         p |  BDS2 std         p |    b_lag    b_big  b_hivol |  Wald p kNN hit
+EURUSD        7.05  1.77e-12 |     -1.86     0.064 |   -0.005   +0.075   -0.043 |   0.186   0.505 (p 0.85, n 459)
+GBPUSD        6.71  1.99e-11 |     -0.79     0.431 |   -0.062   +0.107   +0.024 |   0.203   0.477 (p 0.35, n 459)
+CADUSD        6.36  1.97e-10 |      0.65     0.514 |   -0.056   +0.101   -0.002 |   0.060   0.519 (p 0.46, n 459)
+JPYUSD        8.02  1.04e-15 |     -0.28     0.782 |   +0.007   -0.033   +0.013 |   0.892   0.420 (p 0.00, n 459)
+CHFUSD        9.93  3.08e-23 |      0.25     0.802 |   -0.026   +0.082   +0.005 |   0.026   0.525 (p 0.30, n 459)
+DXY           6.11  9.83e-10 |     -1.35     0.178 |   -0.024   +0.037   +0.017 |   0.660   0.523 (p 0.35, n 459)
+
+(b) EFFECTIVE SPREAD ESTIMATES FROM DAILY BARS (bp, median of monthly estimates)
+   EURUSD  Abdi-Ranaldo   1.0 | Roll   0.0 | Corwin-Schultz   6.0
+   GBPUSD  Abdi-Ranaldo   7.7 | Roll   8.5 | Corwin-Schultz   5.6
+   CADUSD  Abdi-Ranaldo   5.5 | Roll   0.0 | Corwin-Schultz   4.9
+   JPYUSD  Abdi-Ranaldo   1.7 | Roll  15.0 | Corwin-Schultz   4.6
+   CHFUSD  Abdi-Ranaldo   0.0 | Roll   6.6 | Corwin-Schultz   6.3
+   DXY     Abdi-Ranaldo   0.0 | Roll   0.0 | Corwin-Schultz   2.2

@@ -1,0 +1,34 @@
+TABLE 1 CHECK  S7 final 318.80 SR 1.064 | S2 SR 1.432 | S5 final 119.61 | B&H 121.72
+automatic NW bandwidth for n=3932: 9 lags
+effective number of trials: {"nyholt": 17.16479404181323, "liji": 7.0, "galwey": 3.6591640563100625, "k95": 4, "k99": 4, "clusters": {"0.3": 3, "0.5": 4, "0.7": 4}, "avgcorr": 15.223985447784074, "rbar": 0.3815658500963445, "top_eig_share": [0.4002262240905543, 0.3712823339752038, 0.14838867579828152, 0.08010064822159327, 1.2875056011327282e-06, 3.564259502457845e-07]}
+
+#         SR      t8        p8      t9        p9     t12     PSRb | DSR at N = 24 (nominal), 12 (mirror pairs), Nyholt, Li-Ji, Galwey, clusters |rho|>0.5
+S7     1.064   3.715  2.03e-04   3.681  2.32e-04   3.597   0.9996 | 0.046 0.230 0.107 0.537 0.898 0.863 | CI [0.430, 1.765]
+S2     1.432   4.397  1.10e-05   4.317  1.58e-05   4.093   1.0000 | 0.405 0.789 0.597 0.958 0.999 0.998 | CI [0.687, 2.194]
+S22    0.849   3.109  1.88e-03   3.104  1.91e-03   3.087   0.9940 | 0.006 0.056 0.018 0.223 0.660 0.594 | CI [0.274, 1.470]
+S20    0.853   2.942  3.26e-03   2.906  3.66e-03   2.811   0.9946 | 0.006 0.056 0.018 0.226 0.668 0.601 | CI [0.162, 1.588]
+S3     0.681   2.604  9.21e-03   2.601  9.30e-03   2.597   0.9660 | 0.001 0.012 0.003 0.078 0.399 0.333 | CI [0.152, 1.250]
+B&H  SR 0.218 t8 0.887 p8 0.3753
+expected max under null: {'24 (nominal)': 1.486, '12 (mirror pairs)': 1.25, 'Nyholt': 1.376, 'Li-Ji': 1.041, 'Galwey': 0.745, 'clusters |rho|>0.5': 0.79}
+
+MULTIPLE TESTING, all 24 strategies, stationary bootstrap B=5000, mean block 21, seed 20260828
+   vs zero          RC p 0.0082 | SPA p 0.0174 | RW survivors [2, 7, 22]
+   vs buy-and-hold  RC p 0.1048 | SPA p 0.0196 | RW survivors [3, 7, 22]
+   RC p vs B&H across 10 further seeds: min 0.0950 max 0.1130 mean 0.0991
+   RC p vs zero across 10 further seeds: min 0.0064 max 0.0096 mean 0.0078
+   block 5: RC vs B&H 0.0604, SPA 0.0004 | RC vs zero 0.0002, SPA 0.0004
+   block 10: RC vs B&H 0.0718, SPA 0.0016 | RC vs zero 0.0010, SPA 0.0016
+   block 63: RC vs B&H 0.1566, SPA 0.0830 | RC vs zero 0.0318, SPA 0.0494
+
+ROBUSTNESS: free-series overnight leg excluding calendar 2013
+   all        n 3932  SR -1.432  t -4.40  p 1.10e-05  100->61.02
+   ex-2013    n 3671  SR -0.689  t -2.58  p 9.87e-03  100->82.66
+   2013 only  n  261  SR -6.444  t -4.56  p 5.24e-06  100->73.82
+   2014-2025  n 3127  SR -0.994  t -3.36  p 7.78e-04  100->80.68
+   exch all        n 3889 SR +0.269 t +1.04 p 0.298
+   exch ex-2013    n 3631 SR +0.196 t +0.72 p 0.471
+   exch 2013 only  n  258 SR +1.148 t +1.36 p 0.175
+   S7 ex-2013 SR 0.582, S2 ex-2013 SR 0.689
+
+TERMINAL VALUES: S5 119.61 | B&H ffill 121.72 | close-to-close skipped 104.76
+S5 SR 0.203 vs B&H SR 0.218
