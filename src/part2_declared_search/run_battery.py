@@ -30,7 +30,7 @@ print("\n" + "=" * 104)
 print("1.  THE SEARCH SPACE, DECLARED IN FULL")
 print("=" * 104)
 G0 = RES["futures"][3]
-print("   free parameters: rebalance frequency (5) x cross-section slice (3) x cardinality (3)")
+print("   free parameters: rebalance frequency (6) x cross-section slice (3) x cardinality (3)")
 print("                    x regime filter on/off and when on, momentum lookback (3)")
 print("   configurations evaluated: %d   (the original implementation reported 6 of these)" % G0.shape[1])
 for _lab, _kind in UNI:

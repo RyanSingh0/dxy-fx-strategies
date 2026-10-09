@@ -1,7 +1,7 @@
 """Revision: (a) nonlinear and conditional predictability checks, (b) OHLC-based
 effective-spread estimates for the six futures.
 
-(a) BDS test (Brock, Dechert, Scheinkman and LeBaron 1996) on raw and on EWMA-volatility
+(a) BDS test (Broock, Scheinkman, Dechert and LeBaron 1996) on raw and on EWMA-volatility
     standardised returns; threshold / state-dependent autoregressions; out-of-sample
     directional accuracy of a nonparametric (k-nearest-neighbour) sign forecast.
 (b) Roll (1984), Corwin and Schultz (2012) and Abdi and Ranaldo (2017) estimators from

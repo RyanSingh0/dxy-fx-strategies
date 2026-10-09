@@ -107,7 +107,7 @@ print("  free DXY windows:", fw); C["free_windows"] = fw
 res["C"] = C
 
 # ------------------------------------------------------------------ B
-print("\nB. MONTE CARLO SIZE UNDER MICROSTRUCTURE (n = 3,800 sessions, 1,000 samples each)")
+print("\nB. MONTE CARLO SIZE UNDER MICROSTRUCTURE (n = 3,800 sessions, 400 samples each)")
 rng = np.random.default_rng(20261006)
 dx = EX["DX"]
 rng_med = float((dx.H - dx.L).median()); px = round(float(dx.C.median()) / 0.005) * 0.005  # start on the tick grid

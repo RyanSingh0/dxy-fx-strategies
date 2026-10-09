@@ -3,10 +3,10 @@ returns, i.e. spot change plus the three-month interbank differential, so that t
 universe is comparable with the futures universes, whose returns embed the differential."""
 import os, sys
 _HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_HERE, "..")); sys.path.insert(0, os.path.join(_HERE, "..", "part2_declared_search"))
-_E = os.path.join(_HERE, "..", "part2_declared_search", "engine.py")
-__file__ = _E
-exec(open(_E).read())
+sys.path.insert(0, os.path.join(_HERE, ".."))
+sys.path.insert(0, os.path.join(_HERE, "..", "part2_declared_search"))
+import pandas as pd
+from engine import RATES, RCOL, universe, build_grid, strat, nw, sr, multiple_testing, dsr
 R, lvl, dxr = universe("spot")
 rt = RATES[[RCOL[c] for c in R.columns] + ["IR3TIB01USM156N"]].reindex(R.index.union(RATES.index)).ffill().reindex(R.index)
 diff = pd.DataFrame({c: (rt[RCOL[c]] - rt["IR3TIB01USM156N"]) / 100.0 for c in R.columns})

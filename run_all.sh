@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce every number in the paper. Expect roughly 60 to 90 minutes in total.
+# Reproduce every number in the paper. Expect roughly two hours on two cores.
 set -e
 cd "$(dirname "$0")/src"
 echo "Part 1: the data defect"
@@ -22,4 +22,22 @@ python3 part4_reasoned/carry_mechanism.py       > ../results/part4_carry_mechani
 python3 part4_reasoned/carry_long_sample.py     > ../results/part4_carry_long_sample.txt
 python3 part4_reasoned/factors_long_sample.py   > ../results/part4_factors_long_sample.txt
 python3 part4_reasoned/volatility_targeting.py  > ../results/part4_volatility_targeting.txt
+echo "Revision analyses"
+mkdir -p ../results/revision
+python3 revision/fast_search.py                 > ../results/revision/fast_search.txt
+python3 revision/run_ceiling.py boot 2000 21
+python3 revision/run_ceiling.py gauss 1000 21
+for L in 5 63 126; do python3 revision/run_ceiling.py boot 500 $L; done
+python3 revision/summarise_ceiling.py           > ../results/revision/ceiling_summary.txt
+python3 revision/naive_stats.py                 > ../results/revision/naive_stats.txt
+python3 revision/screen_study.py                > ../results/revision/screen_study.txt
+python3 revision/mechanism.py                   > ../results/revision/mechanism.txt
+python3 revision/carry_instability.py           > ../results/revision/carry_instability.txt
+python3 revision/part2_spot_tr.py               > ../results/revision/part2_spot_tr.txt
+python3 revision/nonlinear_spreads.py           > ../results/revision/nonlinear_spreads.txt
+python3 revision/text_numbers.py                > ../results/revision/text_numbers.txt
+python3 revision/figures_naive.py ../results/revision/figures
+python3 revision/make_figures.py ../results/revision/figures
+python3 -m pip freeze | grep -iE "^(numpy|pandas|scipy|statsmodels|matplotlib)==" > ../results/revision/environment.txt
+python3 --version >> ../results/revision/environment.txt
 echo "Done. All output is in results/"

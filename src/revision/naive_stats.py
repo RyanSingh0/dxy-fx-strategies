@@ -1,7 +1,7 @@
 """Revision: Section 3-6 statistics recomputed in one place with documented settings.
 
   * the 24-strategy grid on the free-provider series (reproduces Table 1)
-  * Newey-West t at the automatic bandwidth (8 lags) and at 9 and 12 lags
+  * Newey-West t at the automatic bandwidth (9 lags on this sample) and at 8 and 12 lags
   * PSR against buy-and-hold, DSR at N = 24 and at formally estimated effective N,
     including Strategy 3 (previously n/a)
   * stationary-bootstrap Sharpe confidence intervals

@@ -99,8 +99,8 @@ h = pd.read_csv(str(paths.FRED_DAILY), parse_dates=["Date"]).set_index("Date")
 h10 = 50.14348112 * h.DEXUSEU ** -0.576 * h.DEXJPUS ** 0.136 * h.DEXUSUK ** -0.119 * h.DEXCAUS ** 0.091 * h.DEXSDUS ** 0.042 * h.DEXSZUS ** 0.036
 h10 = h10.dropna()
 for lab, s in [("free close", fr.C), ("exchange close", ex.C)]:
-    z = pd.concat([np.log(s).diff(), np.log(h10).diff()], axis=1).dropna()
-    lv = pd.concat([s, h10], axis=1).dropna()
+    z = pd.concat([np.log(s).diff(), np.log(h10).diff()], axis=1, sort=True).dropna()
+    lv = pd.concat([s, h10], axis=1, sort=True).dropna()
     print("   H.10 noon synthetic vs %-15s daily-change corr %.3f | mean level gap %.3f (sd %.3f)" % (lab, z.corr().iloc[0, 1], (lv.iloc[:, 0] - lv.iloc[:, 1]).mean(), (lv.iloc[:, 0] - lv.iloc[:, 1]).std()))
     res["h10_" + lab] = (float(z.corr().iloc[0, 1]), float((lv.iloc[:, 0] - lv.iloc[:, 1]).mean()))
 # Does the free open on flagged sessions deviate from the synthetic open?
@@ -143,7 +143,7 @@ for s, p in [("E6", "EURUSD"), ("B6", "GBPUSD"), ("D6", "CADUSD"), ("J6", "JPYUS
     r = np.log(q.O / q.C.shift(1)); r[q.Sym != q.Sym.shift(1)] = np.nan
     fut[p] = -W[p] * r
 fut = pd.DataFrame(fut)
-de = pd.concat([co_e.rename("index"), fut], axis=1).dropna()
+de = pd.concat([co_e.rename("index"), fut], axis=1, sort=True).dropna()
 ce = de[list(fut.columns)].sum()
 print("   EXCHANGE: sessions %d | DX overnight cum %+.4f | five futures %+.4f | residual %+.4f" % (len(de), de["index"].sum(), ce.sum(), de["index"].sum() - ce.sum()))
 res["decomp_exch"] = dict(n=len(de), total=float(de["index"].sum()), contrib={p: float(v) for p, v in ce.items()}, resid=float(de["index"].sum() - ce.sum()))

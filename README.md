@@ -12,38 +12,42 @@ pair price files being one session late relative to the index, the benchmark for
 Reality Check and SPA tests, and `np.where` mapping NaN to -1 over the first lookback
 window. The notebooks are preserved as they were and are not maintained.
 
-Replication code and data for the paper *Two Blind Spots in Backtest Validation: From a Manufactured Dollar Index Anomaly to a Corrected Null Result* (Meena and Pinsky).
+Replication code and data for the paper *Two Blind Spots in Backtest Validation: From a
+Manufactured Dollar Index Anomaly to a Corrected Null Result* (Meena and Pinsky).
 
-Modern backtest validation defends against one failure, that too many strategies were
-tried. This repository documents two failures that defence cannot see, using the U.S.
-Dollar Index and its constituent currency futures.
+Standard backtest validation corrects for the number of strategies tried, but it takes the
+input data and the declared search space as given. This repository shows what happens when
+each of those fails, using the U.S. Dollar Index and its constituent currency futures.
 
-1. **A corrupted input.** A free data source records session opening prices with a stale
-   print defect that manufactures an overnight anomaly of Sharpe -1.36. The anomaly is
-   absent from exchange futures on the same instrument. The overfitting diagnostics do not
-   miss the artefact, they certify it: the probability of backtest overfitting is 0.02 for
-   the false result and 0.77 for the correct data.
-2. **An undeclared search.** A strategy reporting Sharpe 0.79 with a Newey-West *t* of
-   3.09 fails every correction once its full 216 configuration search is declared instead
-   of the six configurations originally reported.
+1. **A defective input.** On a free data source the overnight leg of the dollar index has a
+   Sharpe ratio of -1.36, and the overfitting diagnostics rate the result as robust (the
+   probability of backtest overfitting is 0.02). On an independently sourced futures
+   comparator covering the same sessions the overnight leg is +0.25 (*p* = 0.33). The
+   evidence points to a persistent downward bias in the free series' recorded opens. A
+   binomial screen on where the open sits in the session range flags the free series and
+   none of the six futures series.
+2. **An undeclared search.** A regime-conditioned strategy originally reported at Sharpe
+   0.79 (*t* = 3.09) drops to 0.72 (*t* = 2.78) once an `np.where` defect is fixed, and
+   does not survive correction on tradeable instruments once its full 216-configuration
+   search is declared instead of the six configurations reported.
 
-The repository then runs a correctly specified search of 1,312 published specifications
-and finds none exceeding the **noise ceiling**, the Sharpe ratio the identical search
-attains on block bootstrapped returns.
+A 1,312-configuration search of published specifications on the futures data finds nothing
+above the **noise ceiling**, the best Sharpe ratio the same search reaches on
+block-bootstrapped returns.
 
 ## Headline numbers
 
 | Result | Value |
 |---|---|
 | Overnight Sharpe, free provider series | -1.36 (*p* < 0.0001) |
-| Overnight Sharpe, exchange futures | +0.25 (*p* = 0.33) |
-| Probability of backtest overfitting, artefact | 0.016 to 0.028 |
-| Probability of backtest overfitting, correct data | 0.765 to 0.779 |
-| Open location binomial screen, artefact | *p* = 3.68e-13 |
-| Open location binomial screen, exchange | *p* = 0.788 |
+| Overnight Sharpe, futures comparator | +0.25 (*p* = 0.33) |
+| Probability of backtest overfitting, free series | 0.016 to 0.028 |
+| Probability of backtest overfitting, futures | 0.765 to 0.779 |
+| Open location binomial screen, free series | *p* = 3.68e-13 |
+| Open location binomial screen, index futures | *p* = 0.788 |
 | Best of 1,312 configurations, net of costs | +0.653 |
-| Noise ceiling, block bootstrap | +0.712 |
-| Configurations above the ceiling | **0 of 1,312** |
+| Noise ceiling, 2,000 block-bootstrap replications | mean 0.737 (MC s.e. 0.003), 95th percentile 0.940 |
+| Where the observed best sits in the null distribution | 23rd percentile (Monte Carlo *p* = 0.77) |
 
 ## Layout
 
@@ -54,12 +58,13 @@ src/
   data.py                  aligned panel, roll handling, integrity report
   evaluate.py              the one period shift, Sharpe, HAC t, bootstrap, RC/SPA/RW, DSR, CSCV
   signals.py               the 1,312 configuration search space
-  part1_data_defect/       the corrupted input and the screen
+  part1_data_defect/       the defective input and the screen
   part2_declared_search/   the undeclared search space
   part3_exhaustive/        harness validation, the full search, verification
   part4_reasoned/          strategies built from the structure rather than enumerated
-results/       text output of every script
-paper/         main.tex and the MDPI layout emulation
+  revision/                analyses added in the first revision (see below)
+results/       text output of every script; results/revision/ for the revision
+paper/         the manuscript as first submitted
 docs/          longer write-ups of each stage
 ```
 
@@ -70,7 +75,8 @@ pip install -r requirements.txt
 ./run_all.sh
 ```
 
-Expect roughly 60 to 90 minutes. Every script writes to `results/`. Individual stages can
+Expect roughly two hours on two cores, most of it the noise-ceiling replications. Every
+script writes to `results/`. Individual stages can
 be run on their own, for example:
 
 ```bash
@@ -79,6 +85,31 @@ python3 part3_exhaustive/validate_harness.py   # run this first
 python3 part1_data_defect/exchange_battery.py
 ```
 
+## Revision analyses
+
+`src/revision/` holds the analyses added in response to the referees. Run from `src/`:
+
+```bash
+python3 revision/fast_search.py              # fast engine, checked against the original harness
+python3 revision/run_ceiling.py boot 2000 21 # noise ceiling; also gauss 1000 21, boot 500 5/63/126
+python3 revision/summarise_ceiling.py
+python3 revision/naive_stats.py              # effective number of trials, DSR, RC/SPA settings
+python3 revision/screen_study.py             # size, power and false alarms of the open screen
+python3 revision/mechanism.py                # where the free open goes wrong
+python3 revision/carry_instability.py        # futures vs long-sample carry, step by step
+python3 revision/part2_spot_tr.py            # spot universe on total returns
+python3 revision/nonlinear_spreads.py        # nonlinear checks and OHLC spread estimates
+python3 revision/text_numbers.py             # in-text numbers no other script prints
+python3 revision/figures_naive.py <dir>      # Figures 1-5
+python3 revision/make_figures.py <dir>       # Figures 6-10
+```
+
+`fast_search.py` builds each of the 41 base signals once and applies the overlays in NumPy.
+On the real data every one of the 1,312 daily net return series matches the original harness
+exactly, which is what makes thousands of replications practical. `run_ceiling.py` saves the
+full matrix of 1,312 Sharpe ratios per replication (`ceiling_*_L*.npy`); the per-replication
+maxima are in `maxdist_*.npy`. `environment.txt` records the package versions used.
+
 ## Validate before you believe
 
 `src/part3_exhaustive/validate_harness.py` runs ten checks on the evaluation code itself
@@ -86,7 +117,7 @@ and must pass before any result is trusted. The critical one is a deliberate loo
 injection: weights formed from the same day's realised return, applied without the one
 period shift, must produce an absurd Sharpe ratio. They give +24.34. Passed through the
 harness the same weights give -0.11. A harness that cannot detect a strategy that cheats
-cannot certify one that does not.
+cannot be trusted on one that does not.
 
 The other nine cover leakage in each signal family, calibration on simulated zero drift
 data, agreement of the observed best of *N* with theory, independent recomputation of
@@ -95,19 +126,23 @@ arithmetic and turnover accounting.
 
 ## The one thing worth taking away
 
-Run your complete search once on block bootstrapped returns and report the best Sharpe
-ratio it produces. Any real result below that number is indistinguishable from luck at
-your search size. Here the ceiling was 0.71 to 0.75 for the 1,312 configuration search,
-0.38 for a five strategy carry family and 0.41 for the canonical factor set. Every real
-result fell below its own ceiling.
+Run your complete search many times on block-bootstrapped returns and report the
+distribution of the best Sharpe ratio it produces, with the Monte Carlo *p*-value of your
+real best. A result below that ceiling cannot be told apart from what the same search
+finds on unpredictable returns under the chosen resampling scheme. Here the mean ceiling
+was 0.725 to 0.747 across resampling schemes for the 1,312-configuration search. For the
+five-strategy carry family and the canonical factor set (1,000 replications each) the real
+best also sat below the 90th percentile of its null maximum. The Monte Carlo *p*-values
+range from 0.21 to 0.77.
 
 ## Citation
 
 ```bibtex
 @article{meena2026blindspots,
-  title   = {Two Blind Spots in Backtest Validation: Evidence from the U.S. Dollar Index},
+  title   = {Two Blind Spots in Backtest Validation: From a Manufactured Dollar Index
+             Anomaly to a Corrected Null Result},
   author  = {Meena, Aryan and Pinsky, Eugene},
-  journal = {Risks},
+  note    = {Manuscript under review},
   year    = {2026}
 }
 ```

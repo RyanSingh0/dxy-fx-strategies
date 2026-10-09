@@ -5,8 +5,6 @@ STEPWISE RECONCILIATION (linear cross-sectional carry, one-year smoothed signal,
    (3) Same window, five currencies (krona dropped)                   Sharpe -0.004  t -0.02  p 0.987  n 3771
    (4) Futures returns, OECD interbank signal                         Sharpe +0.128  t +0.50  p 0.620  n 3800
    (5) Futures returns, roll-implied signal (first submission)        Sharpe +0.377  t +1.51  p 0.132  n 3800
-/home/claude/repo/dxy-fx-strategies/src/revision/carry_instability.py:66: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
-  cm = pd.concat([s3.rename("spot5"), s4.rename("fut_oecd"), s5.rename("fut_roll")], axis=1).dropna()
    correlations in the common window:
            spot5  fut_oecd  fut_roll
 spot5     1.000     0.808     0.585

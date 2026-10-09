@@ -8,7 +8,7 @@
 ========================================================================================================
 1.  THE SEARCH SPACE, DECLARED IN FULL
 ========================================================================================================
-   free parameters: rebalance frequency (5) x cross-section slice (3) x cardinality (3)
+   free parameters: rebalance frequency (6) x cross-section slice (3) x cardinality (3)
                     x regime filter on/off and when on, momentum lookback (3)
    configurations evaluated: 144   (the original implementation reported 6 of these)
    A. exchange futures, 5 pairs (fully tradeable) kept 144, dropped  72

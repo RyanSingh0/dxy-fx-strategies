@@ -1,0 +1,23 @@
+1. REGIME STRATEGY, quarterly bottom-2, 126-day DXY regime
+   Federal Reserve spot, 6 pairs  np.where as committed        Sharpe +0.792  t 3.09  p 0.0020
+   Federal Reserve spot, 6 pairs  fixed (no position on NaN)   Sharpe +0.722  t 2.78  p 0.0055
+   exchange futures, 5 pairs      np.where as committed        Sharpe +0.540  t 2.11  p 0.0349
+   exchange futures, 5 pairs      fixed (no position on NaN)   Sharpe +0.458  t 1.77  p 0.0765
+   exchange futures, 5 pairs      no regime overlay            Sharpe -0.319
+
+2. OVERNIGHT LEG AT 8, 9 AND 12 LAGS (sessions present in both sources)
+   free      n 3794 | 8 lags t -4.22 p 2.393e-05 | 9 lags t -4.16 p 3.195e-05 | 12 lags t -3.95 p 7.919e-05
+   exchange  n 3794 | 8 lags t +0.98 p 0.328 | 9 lags t +0.98 p 0.3283 | 12 lags t +0.97 p 0.3314
+
+3. BUY-AND-HOLD ON THE FREE SERIES
+   n 3932, automatic bandwidth 9 lags: Sharpe 0.218  t 0.891  p 0.373
+
+4. ARE THE 24 STRATEGIES DISTINGUISHABLE?
+   one-way ANOVA        F(23, 94344) = 6.97  p 1.5e-22
+   Levene               W = 426.43  p 0
+   Jarque-Bera, S7      JB = 2341.7  p 0
+   Ljung-Box, S7, 10    Q = 40.32  p 1.5e-05
+   Kruskal-Wallis       H = 113.15  p 7e-14
+
+5. SMOOTHED CROSS-SECTIONAL CARRY ON FUTURES, where the return comes from
+   Sharpe 0.377 net | gross return 1.34%/yr = differential held 1.10% + spot 0.23%

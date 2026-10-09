@@ -1,0 +1,6 @@
+fast build: 1312 configs in 1.0s
+original build: 17.3s
+max abs difference in daily net returns over all configs: 0.000e+00
+max abs difference in Sharpe ratio: 0.000e+00
+best Sharpe 0.652977  (paper: 0.653)
+bootstrap seed 9000 best Sharpe 0.753 (paper/V2: +0.753)

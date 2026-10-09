@@ -63,7 +63,7 @@ for lab, s in steps:
     print("   %-66s Sharpe %+.3f  t %+.2f  p %.3f  n %d" % (lab, *R[lab]))
 res["steps"] = R
 # correlation between the spot and futures carry return in the common window
-cm = pd.concat([s3.rename("spot5"), s4.rename("fut_oecd"), s5.rename("fut_roll")], axis=1).dropna()
+cm = pd.concat([s3.rename("spot5"), s4.rename("fut_oecd"), s5.rename("fut_roll")], axis=1, sort=True).dropna()
 print("   correlations in the common window:\n", cm.corr().round(3).to_string())
 res["corr"] = cm.corr().values.tolist()
 # correlation of the two signals' cross-sectional ranks

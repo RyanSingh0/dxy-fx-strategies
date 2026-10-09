@@ -38,7 +38,7 @@ C. FALSE ALARMS ON CLEAN EXCHANGE DATA
   30 three-year windows: share p<0.05 = 0.033, p<0.01 = 0.033, min p = 0.0075
   free DXY windows: [(2011, 91, 6, 1.3331565348493778e-20), (2014, 43, 15, 0.000306947015546566), (2017, 19, 20, 1.0), (2020, 31, 19, 0.11892045255943628), (2023, 20, 21, 1.0)]
 
-B. MONTE CARLO SIZE UNDER MICROSTRUCTURE (n = 3,800 sessions, 1,000 samples each)
+B. MONTE CARLO SIZE UNDER MICROSTRUCTURE (n = 3,800 sessions, 400 samples each)
   Gaussian random walk, continuous prices        size5 0.048 size1 0.003 share-at-extreme 0.068 P(low|ext) 0.502
   + tick discreteness (DX tick 0.005)            size5 0.045 size1 0.018 share-at-extreme 0.072 P(low|ext) 0.502
   + bid-ask bounce (prints at bid or ask, 1-tick spread) size5 0.030 size1 0.005 share-at-extreme 0.072 P(low|ext) 0.500

@@ -80,7 +80,7 @@ def period_key(idx, freq):
 
 # ---------------------------------------------------------------- engine
 def strat(R, lvl, freq="Q", slice_="bottom", card=2, signed=True, LB=126, cost_bp=0.0,
-          mom_calendar="universe"):
+          mom_calendar="universe", nan_as_rising=False):
     """mom_calendar: 'universe' computes the LB-session lookback on the traded universe's
     calendar, which is what the original implementation did, with DXY sitting inside the
     merged frame. 'native' computes it on the DXY series' own calendar before alignment.
@@ -96,7 +96,9 @@ def strat(R, lvl, freq="Q", slice_="bottom", card=2, signed=True, LB=126, cost_b
     regime = pd.Series(np.where(mom < 0, 1.0, -1.0), index=mom.index)
     # np.where maps NaN to -1, which would trade the first LB sessions as though the
     # dollar were rising. No position until the lookback window actually exists.
-    regime[mom.isna()] = np.nan
+    # nan_as_rising=True reproduces the committed original, for the before/after comparison.
+    if not nan_as_rising:
+        regime[mom.isna()] = np.nan
     keys = period_key(R.index, freq)
     grouped = {k: v for k, v in R.groupby(keys)}
     per = sorted(grouped.keys())
