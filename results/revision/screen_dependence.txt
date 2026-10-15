@@ -1,0 +1,16 @@
+A/B. DEPENDENCE IN THE EXTREME-LOCATED OPENS, AND DEPENDENCE-ROBUST SCREENS
+series                       low  high    binom p |   runs E[runs]      z       p |  acf1 d |     NW8 p    NW21 p    NW63 p | years low>high / decided, sign p
+Dollar index, free provider   204    82   3.68e-13 |     89   118.0  -4.20   0.000 |  +0.149 |  7.25e-07  2.39e-04  1.34e-02 | 10 / 15, p 0.302
+Dollar index futures          64    60   7.88e-01 |     61    62.9  -0.35   0.727 |  +0.008 |  7.14e-01  7.16e-01  7.35e-01 | 6 / 13, p 1
+Euro futures                  21    20   1.00e+00 |     17    21.5  -1.42   0.155 |  -0.000 |  8.76e-01  8.80e-01  8.91e-01 | 6 / 12, p 1
+Sterling futures              41    21   1.51e-02 |     32    28.8   0.92   0.356 |  -0.002 |  7.61e-03  4.40e-03  5.39e-03 | 9 / 12, p 0.146
+Canadian dollar futures       40    50   3.43e-01 |     47    45.4   0.33   0.738 |  +0.011 |  2.92e-01  2.87e-01  2.84e-01 | 4 / 10, p 0.754
+Yen futures                   35    44   3.68e-01 |     30    40.0  -2.29   0.022 |  +0.025 |  3.25e-01  3.45e-01  3.69e-01 | 4 / 14, p 0.18
+Swiss franc futures           37    44   5.05e-01 |     36    41.2  -1.17   0.242 |  -0.000 |  4.46e-01  4.64e-01  4.88e-01 | 8 / 14, p 0.791
+   free provider excluding 2013: 117/79 binomial p 8.06e-03, NW21 p 1.63e-02
+
+C. MONTE CARLO SIZE WITH DEPENDENCE ACROSS SESSIONS (3,800 sessions, 300 steps, DX tick, 400 samples)
+  independent sessions (reference)                                   size5 0.043 size1 0.005 | NW21 size5 0.048 | mean acf1 of d 0.0003 | share-at-extreme 0.072 P(low|ext) 0.499
+  persistent volatility, log-vol AR(1) phi 0.98                      size5 0.045 size1 0.010 | NW21 size5 0.050 | mean acf1 of d -0.0010 | share-at-extreme 0.074 P(low|ext) 0.500
+  persistent zero-mean drift, AR(1) phi 0.9, sd = 10% of daily vol   size5 0.035 size1 0.005 | NW21 size5 0.040 | mean acf1 of d 0.0009 | share-at-extreme 0.073 P(low|ext) 0.500
+  persistent zero-mean drift, AR(1) phi 0.9, sd = 25% of daily vol   size5 0.040 size1 0.005 | NW21 size5 0.040 | mean acf1 of d 0.0045 | share-at-extreme 0.074 P(low|ext) 0.499

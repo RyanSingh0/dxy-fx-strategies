@@ -5,6 +5,7 @@ STEPWISE RECONCILIATION (linear cross-sectional carry, one-year smoothed signal,
    (3) Same window, five currencies (krona dropped)                   Sharpe -0.004  t -0.02  p 0.987  n 3771
    (4) Futures returns, OECD interbank signal                         Sharpe +0.128  t +0.50  p 0.620  n 3800
    (5) Futures returns, roll-implied signal (first submission)        Sharpe +0.377  t +1.51  p 0.132  n 3800
+   (4') alternative order: spot total returns, roll-implied signal    Sharpe +0.318  t +1.28  p 0.200  n 3771
    correlations in the common window:
            spot5  fut_oecd  fut_roll
 spot5     1.000     0.808     0.585

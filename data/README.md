@@ -4,7 +4,7 @@
 
 | Directory | Contents | Origin |
 |---|---|---|
-| `futures/` | `E6, B6, D6, J6, S6` CME currency futures and `DX` ICE Dollar Index futures, daily nearby OHLC with volume and open interest, 2010-12 to 2025-12 | Commercial vendor, exchange sourced |
+| `futures/` | `E6, B6, D6, J6, S6` CME currency futures and `DX` ICE Dollar Index futures, daily nearby OHLC with volume and open interest, 2010-12 to 2025-12 | Commercial vendor, exchange sourced (Barchart, downloaded 27 August 2026) |
 | `vendor/` | `fx_ohlc_2010_2025.csv`, the free provider series used in the original study | Free redistribution of the ICE spot index |
 | `fred/` | `fred_daily.csv` and `rates.csv` covering 2010 onward, `fred_long.csv` covering 1999 onward | Federal Reserve H.10 and OECD three month interbank rates, retrieved through FRED |
 
@@ -13,7 +13,10 @@
 The FRED series are public domain and may be redistributed freely. The futures files are
 redistributed here only so that the results in the paper can be reproduced. Anyone
 intending to use them for another purpose should check the vendor's redistribution terms
-first.
+first. Anyone who cannot use them can download the same nearby continuous series from any
+exchange-sourced vendor in the same layout (symbol, date, open, high, low, last, volume,
+open interest) and every script will run. The free-series, Federal Reserve spot and
+long-sample results need only the public files.
 
 ## Refreshing the long FRED sample
 

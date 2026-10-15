@@ -23,9 +23,11 @@ each of those fails, using the U.S. Dollar Index and its constituent currency fu
    Sharpe ratio of -1.36, and the overfitting diagnostics rate the result as robust (the
    probability of backtest overfitting is 0.02). On an independently sourced futures
    comparator covering the same sessions the overnight leg is +0.25 (*p* = 0.33). The
-   evidence points to a persistent downward bias in the free series' recorded opens. A
-   binomial screen on where the open sits in the session range flags the free series and
-   none of the six futures series.
+   evidence is consistent with a persistent downward bias in the free series' recorded
+   opens. A binomial screen on where the open sits in the session range flags the free
+   series; of the six futures series only sterling is flagged at 5 per cent, and none after
+   a Bonferroni correction. The flagged sessions in the free series cluster in time, so
+   the exact binomial *p*-value overstates the evidence; Newey-West versions still flag it.
 2. **An undeclared search.** A regime-conditioned strategy originally reported at Sharpe
    0.79 (*t* = 3.09) drops to 0.72 (*t* = 2.78) once an `np.where` defect is fixed, and
    does not survive correction on tradeable instruments once its full 216-configuration
@@ -43,7 +45,7 @@ block-bootstrapped returns.
 | Overnight Sharpe, futures comparator | +0.25 (*p* = 0.33) |
 | Probability of backtest overfitting, free series | 0.016 to 0.028 |
 | Probability of backtest overfitting, futures | 0.765 to 0.779 |
-| Open location binomial screen, free series | *p* = 3.68e-13 |
+| Open location binomial screen, free series | *p* = 3.68e-13 (exact); 2.4e-4 (Newey-West, 21 lags) |
 | Open location binomial screen, index futures | *p* = 0.788 |
 | Best of 1,312 configurations, net of costs | +0.653 |
 | Noise ceiling, 2,000 block-bootstrap replications | mean 0.737 (MC s.e. 0.003), 95th percentile 0.940 |
@@ -75,7 +77,7 @@ pip install -r requirements.txt
 ./run_all.sh
 ```
 
-Expect roughly two hours on two cores, most of it the noise-ceiling replications. Every
+Expect two to three hours on two cores, most of it the noise-ceiling replications. Every
 script writes to `results/`. Individual stages can
 be run on their own, for example:
 
@@ -87,7 +89,8 @@ python3 part1_data_defect/exchange_battery.py
 
 ## Revision analyses
 
-`src/revision/` holds the analyses added in response to the referees. Run from `src/`:
+`src/revision/` holds the analyses added in response to the referees. Release
+`v2.0-revision1` is the first revision and `v2.1-revision2` the second. Run from `src/`:
 
 ```bash
 python3 revision/fast_search.py              # fast engine, checked against the original harness
@@ -100,6 +103,9 @@ python3 revision/carry_instability.py        # futures vs long-sample carry, ste
 python3 revision/part2_spot_tr.py            # spot universe on total returns
 python3 revision/nonlinear_spreads.py        # nonlinear checks and OHLC spread estimates
 python3 revision/text_numbers.py             # in-text numbers no other script prints
+python3 revision/naive_tables.py             # Tables 2-11, the naive decomposition
+python3 revision/npwhere_effect.py           # Section 10 before and after the np.where fix
+python3 revision/screen_dependence.py        # the screen under dependence between sessions
 python3 revision/figures_naive.py <dir>      # Figures 1-5
 python3 revision/make_figures.py <dir>       # Figures 6-10
 ```
@@ -108,7 +114,9 @@ python3 revision/make_figures.py <dir>       # Figures 6-10
 On the real data every one of the 1,312 daily net return series matches the original harness
 exactly, which is what makes thousands of replications practical. `run_ceiling.py` saves the
 full matrix of 1,312 Sharpe ratios per replication (`ceiling_*_L*.npy`); the per-replication
-maxima are in `maxdist_*.npy`. `environment.txt` records the package versions used.
+maxima are in `maxdist_*.npy`. `environment.txt` records the package versions used, and
+`requirements.txt` pins them. Appendix C of the paper maps every table and figure to its
+script and output file.
 
 ## Validate before you believe
 

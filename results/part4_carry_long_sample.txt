@@ -1,5 +1,5 @@
 ========================================================================================================
-LONG-SAMPLE CARRY ,  2002-04-01 .. 2026-08-21  |  6116 sessions  |  6 currencies
+LONG-SAMPLE CARRY, TOTAL RETURNS,  2002-04-01 .. 2026-08-21  |  6116 sessions  |  6 currencies
 ========================================================================================================
    mean carry offered, annualised:
       EURUSD     -0.59%
@@ -10,38 +10,34 @@ LONG-SAMPLE CARRY ,  2002-04-01 .. 2026-08-21  |  6116 sessions  |  6 currencies
       SEKUSD     -0.65%
 
    strategy                                   Sharpe   TotRet%    CAGR%         t        p  turn/yr
-   G1 carry, linear weights                   -0.189     -16.8    -0.75     -0.98   0.3252      0.8
-   G2 carry, linear, 1y smoothed              -0.249     -22.0    -1.02     -1.27   0.2051      0.5
-   G3 carry, top/bottom 2                     -0.176     -17.1    -0.77     -0.92   0.3552      0.5
-   G4 carry, top/bottom 1                     -0.270     -32.9    -1.63     -1.36   0.1723      0.9
-   G5 carry, top/bottom 3                     -0.086      -7.3    -0.31     -0.46   0.6456      0.5
+   G1 carry, linear weights                    0.120       9.5     0.37      0.63   0.5310      0.8
+   G2 carry, linear, 1y smoothed               0.019      -0.1    -0.00      0.09   0.9250      0.5
+   G3 carry, top/bottom 2                      0.100       8.0     0.32      0.52   0.6006      0.5
+   G4 carry, top/bottom 1                     -0.020      -6.2    -0.26     -0.10   0.9202      0.9
+   G5 carry, top/bottom 3                      0.169      12.1     0.47      0.90   0.3689      0.5
+   G2 on spot changes alone                   -0.249   <- spot change only, first submission, superseded
 
 ========================================================================================================
-MECHANISM: is the differential actually kept?
+MECHANISM: is the differential actually kept? (gross, 0 bp)
 ========================================================================================================
    annualised return from the differential held: +1.02%
-   annualised total return                     : -0.95%
-   residual (spot)                             : -1.97%
+   annualised return from spot movements       : -0.95%
+   annualised total return                     : +0.08%
 
 ========================================================================================================
 STABILITY
 ========================================================================================================
-   2002-2007  Sharpe +0.418  TotRet    +6.7%  t +0.98  p 0.3265
-   2008-2013  Sharpe -0.760  TotRet   -22.1%  t -1.96  p 0.0502
-   2014-2019  Sharpe -0.246  TotRet    -5.5%  t -0.59  p 0.5521
-   2020-2026  Sharpe -0.022  TotRet    -0.8%  t -0.06  p 0.9524
+   2002-2007  Sharpe +0.952  TotRet   +16.3%  t +2.23  p 0.0256
+   2008-2013  Sharpe -0.626  TotRet   -18.7%  t -1.62  p 0.1055
+   2014-2019  Sharpe -0.070  TotRet    -1.9%  t -0.17  p 0.8648
+   2020-2026  Sharpe +0.380  TotRet    +7.7%  t +1.02  p 0.3064
 
    drop-one-currency:
-      without EURUSD    Sharpe -0.240  t -1.21  p 0.2254
-      without GBPUSD    Sharpe -0.173  t -0.88  p 0.3776
-      without JPYUSD    Sharpe -0.436  t -2.19  p 0.0288
-      without CADUSD    Sharpe -0.204  t -1.05  p 0.2930
-      without CHFUSD    Sharpe -0.055  t -0.28  p 0.7761
-      without SEKUSD    Sharpe -0.278  t -1.40  p 0.1610
+      without EURUSD    Sharpe +0.007  t +0.03  p 0.9735
+      without GBPUSD    Sharpe +0.038  t +0.19  p 0.8472
+      without JPYUSD    Sharpe -0.167  t -0.84  p 0.4027
+      without CADUSD    Sharpe +0.040  t +0.21  p 0.8373
+      without CHFUSD    Sharpe +0.178  t +0.91  p 0.3612
+      without SEKUSD    Sharpe -0.013  t -0.06  p 0.9486
 
-========================================================================================================
-NOISE CEILING on this long sample (5 carry variants)
-========================================================================================================
-   +0.06  -0.12  -0.19  -0.24  +0.04  -0.17  -0.23  +0.19  +0.00  -0.02
-   ceiling mean -0.068 | 90th pct +0.073 | max +0.186
-   best observed -0.086 (G5 carry, top/bottom 3)  -> within noise
+   noise ceiling for this family: see revision/carry_instability.py (1,000 replications)

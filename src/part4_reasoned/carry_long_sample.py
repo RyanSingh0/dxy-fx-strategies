@@ -7,7 +7,13 @@ constraint. That gives 24 years and six currencies instead of 15 and five.
 
 This is spot rather than futures, so it is not directly tradeable. Its job is to answer a
 different question, whether the carry premium exists over a long sample. The futures
-result then says whether it survives being traded."""
+result then says whether it survives being traded.
+
+Returns are total returns: the spot change plus the interest differential accrued over the
+session, known at the previous close. The first submission used the spot change alone,
+which leaves out the income a carry position is designed to earn (Sharpe -0.249 for G2);
+that figure is printed once below for reference and is not a result. The noise ceiling
+for this family is in revision/carry_instability.py (1,000 replications)."""
 import os, sys
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, ".."))
@@ -29,9 +35,11 @@ rates.columns=list(RC)+["USD"]
 start=max(rates[c].first_valid_index() for c in rates.columns)
 px=px.loc[start:].dropna(how="any")
 rates=rates.reindex(px.index).ffill()
-ret=px.pct_change().fillna(0.0)
+ret_spot=px.pct_change().fillna(0.0)
 # carry = foreign 3M minus US 3M, known at month end, lagged into the next session
 carry=pd.DataFrame({p:(rates[p]-rates["USD"])/100.0 for p in px.columns}).ffill()
+# total return of a long foreign-currency position, same definition as carry_instability.py
+ret=ret_spot+carry.shift(1).fillna(0.0)/TD
 
 def clin(C):
     d=C.sub(C.mean(axis=1),axis=0); g=d.abs().sum(axis=1)
@@ -44,7 +52,7 @@ def rank_w(C,k):
     return W.div(g.where(g>0,np.nan),axis=0).fillna(0.0)
 
 P={"ret":ret}
-print("="*104); print("LONG-SAMPLE CARRY ,  %s .. %s  |  %d sessions  |  %d currencies"
+print("="*104); print("LONG-SAMPLE CARRY, TOTAL RETURNS,  %s .. %s  |  %d sessions  |  %d currencies"
       %(px.index[0].date(),px.index[-1].date(),len(px),px.shape[1])); print("="*104)
 print("   mean carry offered, annualised:")
 for p in px.columns: print("      %-9s %+6.2f%%"%(p,100*carry[p].mean()))
@@ -59,14 +67,16 @@ for nm,W in [("G1 carry, linear weights",clin(carry)),
     g,n,t,_=E.apply_positions(W,P,1.0); s=E.summary(n,t); out[nm]=n
     print("   %-40s %8.3f %9.1f %8.2f %9.2f %8.4f %8.1f"
           %(nm,s["Sharpe"],100*s["TotRet"],100*s["CAGR"],s["t"],s["p"],s["TurnoverPA"]))
+_,n0,t0,_=E.apply_positions(clin(carry.rolling(252).mean()),{"ret":ret_spot},1.0); s0=E.summary(n0,t0)
+print("   %-40s %8.3f   <- spot change only, first submission, superseded"%("G2 on spot changes alone",s0["Sharpe"]))
 
-print("\n"+"="*104); print("MECHANISM: is the differential actually kept?"); print("="*104)
+print("\n"+"="*104); print("MECHANISM: is the differential actually kept? (gross, 0 bp)"); print("="*104)
 W=clin(carry.rolling(252).mean())
 g,_,_,_=E.apply_positions(W,P,0.0)
-earned=(W.shift(1).fillna(0)*(carry/TD)).sum(axis=1)
+earned=(W.shift(1).fillna(0)*(carry.shift(1).fillna(0.0)/TD)).sum(axis=1)
 print("   annualised return from the differential held: %+.2f%%"%(100*TD*earned.mean()))
+print("   annualised return from spot movements       : %+.2f%%"%(100*TD*(g.mean()-earned.mean())))
 print("   annualised total return                     : %+.2f%%"%(100*TD*g.mean()))
-print("   residual (spot)                             : %+.2f%%"%(100*TD*(g.mean()-earned.mean())))
 
 print("\n"+"="*104); print("STABILITY"); print("="*104)
 n=out["G2 carry, linear, 1y smoothed"]
@@ -81,19 +91,5 @@ for drop in px.columns:
     _,nq,_,_=E.apply_positions(Wq,Q,1.0); s=E.summary(nq)
     print("      without %-9s Sharpe %+6.3f  t %+5.2f  p %.4f"%(drop,s["Sharpe"],s["t"],s["p"]))
 
-print("\n"+"="*104); print("NOISE CEILING on this long sample (5 carry variants)"); print("="*104)
-rv=ret.values; nn=len(ret); ceil=[]
-for seed in range(10):
-    rng=np.random.default_rng(300+seed)
-    idx=E.stationary_bootstrap_idx(nn,1,rng,mean_block=21)[0]
-    Q={"ret":pd.DataFrame(rv[idx],index=ret.index,columns=ret.columns)}
-    srs=[]
-    for Wk in [clin(carry),clin(carry.rolling(252).mean()),rank_w(carry,2),rank_w(carry,1),rank_w(carry,3)]:
-        _,q,_,_=E.apply_positions(Wk,Q,1.0); srs.append(E.sharpe(q))
-    ceil.append(max(srs))
-print("   "+"  ".join("%+.2f"%c for c in ceil))
-print("   ceiling mean %+.3f | 90th pct %+.3f | max %+.3f"%(np.mean(ceil),np.percentile(ceil,90),max(ceil)))
-best=max(out,key=lambda k:E.sharpe(out[k]))
-print("   best observed %+.3f (%s)  -> %s"%(E.sharpe(out[best]),best,
-      "ABOVE ceiling" if E.sharpe(out[best])>np.percentile(ceil,90) else "within noise"))
+print("\n   noise ceiling for this family: see revision/carry_instability.py (1,000 replications)")
 pd.DataFrame(out).to_pickle(str(paths.RESULTS)+"/part4_carry_long.pkl")

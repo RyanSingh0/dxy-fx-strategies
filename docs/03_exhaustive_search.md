@@ -18,7 +18,7 @@ Script output: `results/part3_*.txt`
 | Winning configuration rebuilt from first principles | maximum difference 0.0e+00 |
 
 The first two matter most. A harness that cannot detect a strategy which cheats cannot
-certify one that does not.
+be trusted on one that does not.
 
 ## The search space
 
@@ -39,8 +39,10 @@ whole search on the resampled panel.
 | Quantity | Value |
 |---|---|
 | Best configuration on real data, net of costs | +0.653 |
-| Noise ceiling, Gaussian null | +0.752 |
-| Noise ceiling, block bootstrap | +0.712 |
+| Noise ceiling, block bootstrap (mean block 21), 2,000 replications: mean (MC s.e.) | +0.737 (0.003) |
+| 90th and 95th percentiles | +0.887, +0.940 |
+| Monte Carlo *p* of the observed best | 0.767 |
+| Noise ceiling, correlated Gaussian null, 1,000 replications: mean; *p* | +0.725; 0.746 |
 | Expected best of 1,312 under the null | +0.865 |
 | **Configurations exceeding the ceiling** | **0 of 1,312** |
 | White RC *p* | 0.659 |
@@ -50,8 +52,13 @@ whole search on the resampled panel.
 | Harvey-Liu adjusted *p*, Bonferroni and BHY | 1.000, 1.000 |
 | Probability of backtest overfitting | 0.556 |
 
-The best result found in fifteen years of exchange data is below what the same search finds
-in random data.
+The best result found in fifteen years of exchange data sits at the 23rd percentile of what
+the same search finds on block-bootstrapped returns. Across mean block lengths of 5 to 126
+sessions and a Gaussian null the mean ceiling is 0.725 to 0.747 and the Monte Carlo *p*
+0.75 to 0.79 (`results/revision/ceiling_summary.txt`). The first submission used six
+replications (0.712 bootstrap, 0.752 Gaussian); the first six replications of each reproduce those
+values exactly. The ceiling is a benchmark under the chosen resampling scheme, and the
+Monte Carlo *p*-value is the test.
 
 ## Holdout
 

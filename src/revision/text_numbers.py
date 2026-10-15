@@ -34,6 +34,13 @@ for kind, lab in [("spot", "Federal Reserve spot, 6 pairs"), ("futures", "exchan
 R, lvl, _ = G.universe("futures")
 r = G.strat(R, lvl, "Q", "bottom", 2, False, 126)
 print("   %-30s %-28s Sharpe %+.3f" % ("exchange futures, 5 pairs", "no regime overlay", G.sr(r)))
+# Table 20, row 6: lookback counted on the index's own calendar instead of the panel's
+for kind, lab in [("futures", "exchange futures, 5 pairs"), ("spot", "Federal Reserve spot, 6 pairs")]:
+    R, lvl, _ = G.universe(kind)
+    for mc in ("universe", "native"):
+        r = G.strat(R, lvl, "Q", "bottom", 2, True, 126, mom_calendar=mc)
+        t, p = G.nw(r)
+        print("   %-30s %-28s Sharpe %+.3f  t %.2f  p %.4f" % (lab, "momentum calendar " + mc, G.sr(r), t, p))
 
 print("\n2. OVERNIGHT LEG AT 8, 9 AND 12 LAGS (sessions present in both sources)")
 yh, bc = N.load_free(), N.load_exch()

@@ -62,6 +62,14 @@ for lab, s in steps:
     st_ = E.summary(s); R[lab] = (st_["Sharpe"], st_["t"], st_["p"], int(st_["n"]))
     print("   %-66s Sharpe %+.3f  t %+.2f  p %.3f  n %d" % (lab, *R[lab]))
 res["steps"] = R
+# the stepwise split depends on the order of the last two steps, so I also swap them:
+# spot total returns (five currencies, futures window) with the roll-implied signal first
+Wroll = clin(C.rolling(252).mean()).reindex(ret_tr.index).ffill().fillna(0.0)[five]
+_, s3b, _, _ = E.apply_positions(Wroll, {"ret": ret_tr[five]}, 1.0)
+s3b = s3b[(s3b.index >= a0) & (s3b.index <= b0)]
+st_ = E.summary(s3b); R_alt = (st_["Sharpe"], st_["t"], st_["p"], int(st_["n"]))
+print("   %-66s Sharpe %+.3f  t %+.2f  p %.3f  n %d" % ("(4') alternative order: spot total returns, roll-implied signal", *R_alt))
+res["step_alt"] = R_alt
 # correlation between the spot and futures carry return in the common window
 cm = pd.concat([s3.rename("spot5"), s4.rename("fut_oecd"), s5.rename("fut_roll")], axis=1, sort=True).dropna()
 print("   correlations in the common window:\n", cm.corr().round(3).to_string())

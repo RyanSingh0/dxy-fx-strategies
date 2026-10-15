@@ -38,6 +38,11 @@ print("close(free) - close(exchange): mean %+.4f  sd %.4f  (index points)" % (of
 print("typical daily range, exchange : mean %.4f  median %.4f" % ((j.H_b-j.L_b).mean(), (j.H_b-j.L_b).median()))
 print("offset as a share of one day's range: %.1f%%" % (100*off.mean()/(j.H_b-j.L_b).mean()))
 print("-> large enough that a cross-vendor price ratio is dominated by the offset.")
+# the invalid version for the record: exchange opens dropped into the free series at the
+# price level, then Strategy 7 (short overnight, long daytime) at zero cost
+co_x = (j.O_b / j.C_y.shift(1) - 1).fillna(0.0); oc_x = (j.C_y / j.O_b - 1).fillna(0.0)
+print("price-level swap, free closes with exchange opens: Strategy 7 ends at %.1f from 100"
+      "   <- the offset, not a finding" % (100 * np.prod((1 - co_x) * (1 + oc_x))))
 
 print("\n" + "="*92)
 print("1.  OPEN LOCATION, WITH THE SAME-DAY OFFSET REMOVED")

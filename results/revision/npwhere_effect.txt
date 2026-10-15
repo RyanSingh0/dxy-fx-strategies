@@ -1,0 +1,43 @@
+====================================================================================================
+1. HEADLINE CONFIGURATION (quarterly, bottom 2, 126-session regime)
+====================================================================================================
+   A. exchange futures, 5 pairs     committed (NaN -> -1)    first day 2011-01-03  n 3778  End  175.06  Sharpe 0.540  t 2.11  p 0.0349
+   A. exchange futures, 5 pairs     corrected (no position)  first day 2011-07-01  n 3653  End  157.39  Sharpe 0.458  t 1.77  p 0.0765
+   B. futures + FRED SEK, 6 pairs   committed (NaN -> -1)    first day 2011-01-04  n 3579  End  181.76  Sharpe 0.587  t 2.27  p 0.0235
+   B. futures + FRED SEK, 6 pairs   corrected (no position)  first day 2011-07-01  n 3458  End  162.20  Sharpe 0.498  t 1.90  p 0.0570
+   C. Federal Reserve H.10 spot, 6 pairs committed (NaN -> -1)    first day 2011-01-04  n 3593  End  232.40  Sharpe 0.792  t 3.09  p 0.0020
+   C. Federal Reserve H.10 spot, 6 pairs corrected (no position)  first day 2011-07-01  n 3471  End  209.43  Sharpe 0.722  t 2.78  p 0.0055
+
+====================================================================================================
+2. FULL DECLARED GRID (multiple-testing window = sessions on which every configuration trades)
+====================================================================================================
+   A. exchange futures, 5 pairs     committed (NaN -> -1)    configs 144  window 2011-01-03..2025-12-30 (3778)  best 0.632  headline rank 2
+                                                             null zero: RC 0.2077 SPA 0.3077 RW 0 | null long dollar: RC 0.6160 SPA 0.7243 RW 0 | E[max] 0.647 DSR 0.337
+   A. exchange futures, 5 pairs     corrected (no position)  configs 144  window 2012-01-03..2025-12-30 (3526)  best 0.626  headline rank 6
+                                                             null zero: RC 0.2333 SPA 0.3833 RW 0 | null long dollar: RC 0.6730 SPA 0.7647 RW 0 | E[max] 0.654 DSR 0.227
+   B. futures + FRED SEK, 6 pairs   committed (NaN -> -1)    configs 216  window 2011-01-04..2025-12-30 (3579)  best 0.740  headline rank 2
+                                                             null zero: RC 0.0823 SPA 0.0907 RW 0 | null long dollar: RC 0.2630 SPA 0.3910 RW 0 | E[max] 0.709 DSR 0.321
+   B. futures + FRED SEK, 6 pairs   corrected (no position)  configs 216  window 2012-01-04..2025-12-30 (3339)  best 0.669  headline rank 5
+                                                             null zero: RC 0.2203 SPA 0.2830 RW 0 | null long dollar: RC 0.4373 SPA 0.5933 RW 0 | E[max] 0.707 DSR 0.217
+   C. Federal Reserve H.10 spot, 6 pairs committed (NaN -> -1)    configs 216  window 2011-01-04..2026-01-05 (3593)  best 0.792  headline rank 1
+                                                             null zero: RC 0.0470 SPA 0.0650 RW 0 | null long dollar: RC 0.2457 SPA 0.3753 RW 0 | E[max] 0.654 DSR 0.701
+   C. Federal Reserve H.10 spot, 6 pairs corrected (no position)  configs 216  window 2012-01-04..2026-01-05 (3352)  best 0.745  headline rank 2
+                                                             null zero: RC 0.0963 SPA 0.1570 RW 0 | null long dollar: RC 0.3173 SPA 0.4727 RW 0 | E[max] 0.646 DSR 0.612
+
+====================================================================================================
+3. ONE-AT-A-TIME SWEEPS ON THE TRADEABLE FUTURES PANEL
+====================================================================================================
+   committed (NaN -> -1)    lookback: none -0.319 | 63 +0.177 | 126 +0.540 | 252 +0.280
+                            frequency: D -0.195 | W +0.035 | M +0.103 | Q +0.540 | S +0.170 | Y +0.413
+   corrected (no position)  lookback: none -0.319 | 63 +0.136 | 126 +0.458 | 252 +0.259
+                            frequency: D -0.234 | W -0.081 | M +0.047 | Q +0.458 | S +0.112 | Y +0.456
+
+====================================================================================================
+4. EQUAL-WEIGHT ENSEMBLES AND THE 36-CONFIGURATION AUTHOR-FAVOURABLE SUBSET
+====================================================================================================
+   A. exchange futures, 5 pairs     committed (NaN -> -1)    bottom regime-signed 0.207 (p 0.42) | all regime-signed -0.103 (p 0.68) | subset of 36: RC 0.2146 SPA 0.2982 RW 0
+   A. exchange futures, 5 pairs     corrected (no position)  bottom regime-signed 0.148 (p 0.57) | all regime-signed -0.160 (p 0.53) | subset of 36: RC 0.4500 SPA 0.4618 RW 0
+   B. futures + FRED SEK, 6 pairs   committed (NaN -> -1)    bottom regime-signed 0.397 (p 0.13) | all regime-signed -0.214 (p 0.40) | subset of 36: RC 0.1880 SPA 0.2092 RW 0
+   B. futures + FRED SEK, 6 pairs   corrected (no position)  bottom regime-signed 0.343 (p 0.21) | all regime-signed -0.265 (p 0.31) | subset of 36: RC 0.5544 SPA 0.5502 RW 0
+   C. Federal Reserve H.10 spot, 6 pairs committed (NaN -> -1)    bottom regime-signed 0.349 (p 0.18) | all regime-signed -0.277 (p 0.29) | subset of 36: RC 0.0154 SPA 0.0232 RW 1
+   C. Federal Reserve H.10 spot, 6 pairs corrected (no position)  bottom regime-signed 0.312 (p 0.26) | all regime-signed -0.322 (p 0.23) | subset of 36: RC 0.0668 SPA 0.0838 RW 0

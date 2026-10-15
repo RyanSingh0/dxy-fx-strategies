@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce every number in the paper. Expect roughly two hours on two cores.
+# Reproduce every number in the paper. Expect two to three hours on two cores.
 set -e
 cd "$(dirname "$0")/src"
 echo "Part 1: the data defect"
@@ -36,6 +36,9 @@ python3 revision/carry_instability.py           > ../results/revision/carry_inst
 python3 revision/part2_spot_tr.py               > ../results/revision/part2_spot_tr.txt
 python3 revision/nonlinear_spreads.py           > ../results/revision/nonlinear_spreads.txt
 python3 revision/text_numbers.py                > ../results/revision/text_numbers.txt
+python3 revision/naive_tables.py                > ../results/revision/naive_tables.txt
+python3 revision/npwhere_effect.py              > ../results/revision/npwhere_effect.txt
+python3 revision/screen_dependence.py           > ../results/revision/screen_dependence.txt
 python3 revision/figures_naive.py ../results/revision/figures
 python3 revision/make_figures.py ../results/revision/figures
 python3 -m pip freeze | grep -iE "^(numpy|pandas|scipy|statsmodels|matplotlib)==" > ../results/revision/environment.txt

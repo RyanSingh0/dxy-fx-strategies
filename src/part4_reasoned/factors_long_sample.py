@@ -4,7 +4,12 @@ Asness, Moskowitz and Pedersen (2013) argue that value and momentum work across 
 classes and work best together, because they are negatively correlated. Menkhoff et al.
 (2012) document currency momentum and Lustig, Roussanov and Verdelhan document carry. If a
 profitable FX strategy exists in G10 at all, this combination over 24 years is where it
-should show up."""
+should show up.
+
+Returns are total returns, spot change plus the interest differential known at the
+previous close, as in carry_long_sample.py. The signals still come from spot prices and
+interbank rates. The noise ceiling for this set (1,000 replications) is in
+revision/carry_instability.py."""
 import os, sys
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, ".."))
@@ -22,8 +27,8 @@ RC={"EURUSD":"IR3TIB01EZM156N","GBPUSD":"IR3TIB01GBM156N","JPYUSD":"IR3TIB01JPM1
 rates=A[[RC[p] for p in RC]+["IR3TIB01USM156N"]]; rates.columns=list(RC)+["USD"]
 start=max(rates[c].first_valid_index() for c in rates.columns)
 px=px.loc[start:]; rates=rates.reindex(px.index).ffill()
-ret=px.pct_change().fillna(0.0); P={"ret":ret}
 carry=pd.DataFrame({p:(rates[p]-rates["USD"])/100.0 for p in px.columns}).ffill()
+ret=px.pct_change().fillna(0.0)+carry.shift(1).fillna(0.0)/TD; P={"ret":ret}
 
 def clin(C):
     d=C.sub(C.mean(axis=1),axis=0); g=d.abs().sum(axis=1)
@@ -36,7 +41,7 @@ SIG={
  "VALUE  (5-year reversal, AMP 2013)"      : -(px/px.shift(1260)-1.0),
 }
 print("="*104)
-print("CANONICAL FX FACTORS ,  %s .. %s | %d sessions | %d currencies"
+print("CANONICAL FX FACTORS, TOTAL RETURNS,  %s .. %s | %d sessions | %d currencies"
       %(px.index[0].date(),px.index[-1].date(),len(px),px.shape[1])); print("="*104)
 print("   %-42s %8s %9s %8s %8s %8s"%("factor","Sharpe","TotRet%","t","p","turn/yr"))
 rs={}
@@ -62,20 +67,4 @@ for a,b in [(2002,2007),(2008,2013),(2014,2019),(2020,2026)]:
     m=(comb.index.year>=a)&(comb.index.year<=b); ss=E.summary(comb[m])
     if ss: print("   %d-%d  Sharpe %+6.3f  TotRet %+7.1f%%  t %+5.2f  p %.4f"%(a,b,ss["Sharpe"],100*ss["TotRet"],ss["t"],ss["p"]))
 
-print("\n"+"="*104); print("NOISE CEILING (5 candidates: 3 factors + 2 combinations)"); print("="*104)
-rv=ret.values; nn=len(ret); ceil=[]
-for seed in range(10):
-    rng=np.random.default_rng(880+seed)
-    idx=E.stationary_bootstrap_idx(nn,1,rng,mean_block=21)[0]
-    pq=pd.DataFrame(rv[idx],index=ret.index,columns=ret.columns)
-    Q={"ret":pq}; cx=100*(1+pq).cumprod()
-    sigq={"c":carry.rolling(252).mean(),"m":(cx.shift(21)/cx.shift(252)-1.0),"v":-(cx/cx.shift(1260)-1.0)}
-    rr={}
-    for k,S in sigq.items():
-        _,q,_,_=E.apply_positions(clin(S),Q,1.0); rr[k]=q
-    Rq=pd.DataFrame(rr).dropna(); zq=Rq.div(Rq.std())
-    cands=[E.sharpe(Rq[k]) for k in Rq]+[E.sharpe(zq.mean(axis=1)),E.sharpe(zq[["c","v"]].mean(axis=1))]
-    ceil.append(max(cands))
-print("   "+"  ".join("%+.2f"%c for c in ceil))
-print("   ceiling mean %+.3f | 90th pct %+.3f | max %+.3f"%(np.mean(ceil),np.percentile(ceil,90),max(ceil)))
-print("   best observed on real data: %+.3f"%max([E.sharpe(R[c]) for c in R]+[E.sharpe(comb),E.sharpe(cv)]))
+print("\n   noise ceiling for these five candidates: see revision/carry_instability.py (1,000 replications)")

@@ -5,6 +5,7 @@ close(free) - close(exchange): mean +0.0410  sd 0.1845  (index points)
 typical daily range, exchange : mean 0.6118  median 0.5450
 offset as a share of one day's range: 6.7%
 -> large enough that a cross-vendor price ratio is dominated by the offset.
+price-level swap, free closes with exchange opens: Strategy 7 ends at 1178.7 from 100   <- the offset, not a finding
 
 ============================================================================================
 1.  OPEN LOCATION, WITH THE SAME-DAY OFFSET REMOVED

@@ -36,3 +36,15 @@ WHAT IT DOES AND DOES NOT DO
    vol of realised 21d vol: raw 0.025 -> managed 0.015  (this is the real benefit)
    worst day: raw -4.32% -> managed -4.07%
    total return: raw +5.6% -> managed +3.0%
+
+====================================================================================================
+THE SAME ON TOTAL RETURNS (spot change plus interest differential), 2002 onward
+====================================================================================================
+   DXY          raw SR +0.026  vol-managed SR +0.062  change +0.036
+   EURUSD       raw SR +0.113  vol-managed SR +0.066  change -0.047
+   GBPUSD       raw SR +0.073  vol-managed SR +0.100  change +0.027
+   JPYUSD       raw SR -0.203  vol-managed SR -0.281  change -0.079
+   CADUSD       raw SR +0.099  vol-managed SR +0.001  change -0.098
+   CHFUSD       raw SR +0.175  vol-managed SR +0.177  change +0.002
+   SEKUSD       raw SR +0.035  vol-managed SR +0.010  change -0.025
+   mean Sharpe change on total returns, 2002-04-01 onward: -0.026, improved 3 of 7

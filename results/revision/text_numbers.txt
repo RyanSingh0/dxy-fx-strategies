@@ -4,6 +4,10 @@
    exchange futures, 5 pairs      np.where as committed        Sharpe +0.540  t 2.11  p 0.0349
    exchange futures, 5 pairs      fixed (no position on NaN)   Sharpe +0.458  t 1.77  p 0.0765
    exchange futures, 5 pairs      no regime overlay            Sharpe -0.319
+   exchange futures, 5 pairs      momentum calendar universe   Sharpe +0.458  t 1.77  p 0.0765
+   exchange futures, 5 pairs      momentum calendar native     Sharpe +0.545  t 2.11  p 0.0352
+   Federal Reserve spot, 6 pairs  momentum calendar universe   Sharpe +0.722  t 2.78  p 0.0055
+   Federal Reserve spot, 6 pairs  momentum calendar native     Sharpe +0.867  t 3.35  p 0.0008
 
 2. OVERNIGHT LEG AT 8, 9 AND 12 LAGS (sessions present in both sources)
    free      n 3794 | 8 lags t -4.22 p 2.393e-05 | 9 lags t -4.16 p 3.195e-05 | 12 lags t -3.95 p 7.919e-05

@@ -1,26 +1,29 @@
-# Part 1. A data defect that the diagnostics certify
+# Part 1. A data defect that the diagnostics rank above the comparator
 
-Script output: `results/part1_*.txt`
+Script output: `results/part1_*.txt`, `results/revision/mechanism.txt`,
+`results/revision/screen_study.txt`, `results/revision/screen_dependence.txt`
 
 ## What was claimed
 
 Splitting the daily return of the U.S. Dollar Index into an overnight leg, previous close
-to open and a daytime leg, open to close, produced an overnight leg with a Sharpe ratio of
+to open, and a daytime leg, open to close, produced an overnight leg with a Sharpe ratio of
 -1.36 at *p* < 0.0001 on the free provider series. That is a very large effect.
 
-## What is actually there
+## What the comparator shows
 
 On exchange sourced Dollar Index futures over the same sessions the overnight leg has a
-Sharpe ratio of +0.25 at *p* = 0.33. Nothing. Both figures use the 3,793 overnight returns
-common to the two series. On its own full sample the free series gives -1.49 and the
-exchange series on its own gives +0.269.
+Sharpe ratio of +0.25 at *p* = 0.33, indistinguishable from zero. Both figures use the
+3,793 overnight returns common to the two series. On its own full sample the free series
+gives -1.43 and the exchange series +0.27. The futures are a different instrument from the
+spot index, so they are a comparator, not ground truth.
 
-## Isolating the cause
+## Isolating the open
 
 A naive substitution of one vendor's prices into the other's series is invalid here. The
 two series carry a persistent level offset of 0.041 index points, which is 6.7 per cent of a
 typical daily range, so a price level substitution injects that offset into every return.
-Done that way it produced a terminal value of 1178 for one strategy, which is an artefact.
+Done that way (free closes with exchange opens) Strategy 7 ends at 1,179, which is the
+offset and not a finding.
 
 The valid version transfers the close to open **return** so each row uses one vendor's
 price level throughout.
@@ -28,41 +31,47 @@ price level throughout.
 | Price level, opening return | Overnight final | Sharpe | *p* |
 |---|---|---|---|
 | Free, free open | 61.68 | -1.358 | 0.0000 |
-| Free, exchange open | 108.08 | +0.252 | 0.3283 |
-| Exchange, exchange open | 108.08 | +0.252 | 0.3283 |
+| Free, exchange open | 108.08 | +0.252 | 0.3280 |
+| Exchange, exchange open | 108.08 | +0.252 | 0.3280 |
 | Exchange, free open | 61.68 | -1.358 | 0.0000 |
 
 The overnight leg follows whichever vendor's open is used and is unaffected by whose closes
-are used. The opening prices are the whole story.
+are used. That locates the difference in the opening prices. It does not say why they
+differ; `src/revision/mechanism.py` narrows that down, and the mechanism stays inferred.
 
 With the offset removed, the free open lies outside the exchange high to low range on 7.30
 per cent of sessions. On the 204 sessions where it equals its own daily low it sits at
 -0.073 of the exchange range and falls outside that range 56.9 per cent of the time against
-3.5 per cent on ordinary sessions. A price outside the session range is not a traded price.
+3.5 per cent on ordinary sessions.
 
-## The part that matters
+## What the diagnostics say
 
 | Series | White RC *p* | Hansen SPA *p* | Romano-Wolf survivors | PBO |
 |---|---|---|---|---|
-| Free provider (the artefact) | 0.1032 | 0.0132 | 3 of 24 | 0.016 to 0.028 |
-| Exchange futures (correct) | 0.9924 | 1.0000 | 0 of 24 | 0.765 to 0.779 |
+| Free provider (defective opens) | 0.1032 | 0.0132 | 3 of 24 | 0.016 to 0.028 |
+| Exchange futures (comparator) | 0.9924 | 1.0000 | 0 of 24 | 0.765 to 0.779 |
 
-The diagnostics rank the false result far above the true one. Both readings are correct on
-their own terms. The probability of backtest overfitting asks whether an in-sample winner
-keeps winning out of sample and a persistent data defect does exactly that. A stationary
-artefact is indistinguishable from a real anomaly to every tool in this family.
+The diagnostics rank the free series' result far above the comparator's. Both readings are
+correct on their own terms. The probability of backtest overfitting asks whether an
+in-sample winner keeps winning out of sample, and a persistent data defect does exactly
+that.
 
 ## The screen
 
-Under the null that a recorded open is an unbiased draw from the session, it is equally
-likely to equal the low as the high. Counting the two gives an exact binomial test needing
-no second data source. It clears the exchange series at *p* = 0.788 and rejects the
-corrupted one at *p* = 3.68e-13.
+The null is a symmetry condition: the open is as likely to equal the session low as the
+session high. Counting the two gives an exact binomial test needing no second data source.
+It clears the exchange series at *p* = 0.788 and flags the free series at *p* = 3.68e-13.
 
-Two honest caveats. It also flags EURUSD at *p* = 0.0061, which barely survives Bonferroni
-across eight tests at 0.00625 and we cannot prove that is a true positive rather than a
-multiplicity artefact. And it is validated against exactly one instrument with a known good
-reference, so it is a promising diagnostic rather than an established one.
+That exact *p*-value assumes independent sessions. In the free series the flagged sessions
+cluster (runs test *z* = -4.20, most of them in 2013). Newey-West versions of the test still
+flag it (*p* = 7e-7, 2e-4 and 0.013 at 8, 21 and 63 lags), a one-vote-per-year sign test
+does not (10 of 15 years, *p* = 0.30). The futures series show no such clustering.
+
+The screen also flags EURUSD at *p* = 0.0061, which barely survives Bonferroni across eight
+tests, and sterling futures at *p* = 0.015, which does not survive across six. It has been
+studied on one instrument complex, two vendors and simulations. It is a screen whose
+rejection calls for investigation, not a general test for corruption, and it cannot see
+errors that are symmetric in direction.
 
 ## Corrections made during this work
 

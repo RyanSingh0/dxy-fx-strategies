@@ -134,16 +134,18 @@ def all_configs():
     c += [(f, s, k, False, 126) for f in FREQS for s in SLICES for k in CARDS]
     return c
 
-def build_grid(R, lvl, cost_bp=0.0, minlen=500, verbose=False):
+def build_grid(R, lvl, cost_bp=0.0, minlen=500, verbose=False, nan_as_rising=False):
     """No silent failures. Every configuration is either included or reported with a reason.
     The original implementation wrapped this loop in a bare `except: pass`, which on
     current pandas discarded every annual configuration without saying so, because the
-    alias 'A' was renamed 'Y'."""
+    alias 'A' was renamed 'Y'.
+    nan_as_rising=True rebuilds the grid with the committed np.where behaviour, only for
+    the before/after comparison in revision/npwhere_effect.py."""
     cols = {}; dropped = []
     for f, s, k, sg, lb in all_configs():
         key = (f, s, k, "reg%d" % lb if sg else "plain")
         try:
-            r = strat(R, lvl, f, s, k, sg, lb, cost_bp)
+            r = strat(R, lvl, f, s, k, sg, lb, cost_bp, nan_as_rising=nan_as_rising)
         except Exception as e:
             dropped.append((key, "error: %s" % e)); continue
         if len(r) == 0:

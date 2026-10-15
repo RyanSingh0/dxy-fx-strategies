@@ -75,3 +75,26 @@ print("   vol of realised 21d vol: raw %.3f -> managed %.3f  (this is the real b
       %( (dxr.rolling(21).std()*np.sqrt(TD)).std(), (v.rolling(21).std()*np.sqrt(TD)).std()))
 print("   worst day: raw %.2f%% -> managed %.2f%%"%(100*dxr.min(),100*v.min()))
 print("   total return: raw %+.1f%% -> managed %+.1f%%"%(100*((1+dxr).prod()-1),100*((1+v).prod()-1)))
+
+print("\n"+"="*100); print("THE SAME ON TOTAL RETURNS (spot change plus interest differential), 2002 onward"); print("="*100)
+# The table above uses price changes from 1999. A long currency position also earns the
+# differential, so I repeat it on total returns from the date all interbank rates exist.
+RC={"EURUSD":"IR3TIB01EZM156N","GBPUSD":"IR3TIB01GBM156N","JPYUSD":"IR3TIB01JPM156N",
+    "CADUSD":"IR3TIB01CAM156N","CHFUSD":"IR3TIB01CHM156N","SEKUSD":"IR3TIB01SEM156N"}
+rates=A[[RC[p] for p in RC]+["IR3TIB01USM156N"]].copy(); rates.columns=list(RC)+["USD"]
+t0=max(rates[c].first_valid_index() for c in rates.columns)
+rates=rates.reindex(ret.index).ffill()
+dif=pd.DataFrame({p:(rates[p]-rates["USD"])/100.0 for p in RC}).shift(1)
+# long DXY is short the basket with the index weights, so it earns minus the weighted differential
+W_DXY={"EURUSD":0.576,"JPYUSD":0.136,"GBPUSD":0.119,"CADUSD":0.091,"SEKUSD":0.042,"CHFUSD":0.036}
+tr={"DXY":dxr-sum(W_DXY[p]*dif[p] for p in RC)/TD}
+for c in ret.columns: tr[c]=ret[c]+dif[c]/TD
+rows_tr=[]
+for nm,r in tr.items():
+    r=r.loc[t0:].dropna()
+    v,_=volmanage(r)
+    a,b=E.summary(r),E.summary(v.loc[r.index])
+    rows_tr.append(b["Sharpe"]-a["Sharpe"])
+    print("   %-12s raw SR %+.3f  vol-managed SR %+.3f  change %+.3f"%(nm,a["Sharpe"],b["Sharpe"],b["Sharpe"]-a["Sharpe"]))
+print("   mean Sharpe change on total returns, %s onward: %+.3f, improved %d of %d"
+      %(t0.date(),np.mean(rows_tr),sum(1 for x in rows_tr if x>0),len(rows_tr)))
