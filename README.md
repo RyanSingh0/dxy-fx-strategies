@@ -2,8 +2,8 @@
 
 ## Repository layout
 
-`src/`, `data/`, `results/` and `paper/` reproduce the submitted manuscript. Run
-`./run_all.sh` and every table regenerates from the raw inputs.
+`src/`, `data/` and `results/` reproduce the current version of the manuscript (second
+revision, in `paper/`). Run `./run_all.sh` and every table regenerates from the raw inputs.
 
 `original/` holds the earlier notebook analysis of the same data, kept deliberately.
 The manuscript identifies four defects in that implementation, and this is the code
@@ -64,9 +64,10 @@ src/
   part2_declared_search/   the undeclared search space
   part3_exhaustive/        harness validation, the full search, verification
   part4_reasoned/          strategies built from the structure rather than enumerated
-  revision/                analyses added in the first revision (see below)
-results/       text output of every script; results/revision/ for the revision
-paper/         the manuscript as first submitted
+  revision/                analyses added in the two revisions (see below)
+results/       text output of every script; results/revision/ for the revisions
+paper/         the second revision (`..._revision2.pdf`) and, for reference, the first
+               submission (`..._manuscript.pdf`) and an earlier short draft (`main.tex`)
 docs/          longer write-ups of each stage
 ```
 

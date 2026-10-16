@@ -4,9 +4,24 @@
 
 | Directory | Contents | Origin |
 |---|---|---|
-| `futures/` | `E6, B6, D6, J6, S6` CME currency futures and `DX` ICE Dollar Index futures, daily nearby OHLC with volume and open interest, 2010-12 to 2025-12 | Commercial vendor, exchange sourced (Barchart, downloaded 27 August 2026) |
+| `futures/` | `E6, B6, D6, J6, S6` CME currency futures and `DX` ICE Dollar Index futures, daily nearby OHLC with volume and open interest, 2010-12 to 2025-12 | Commercial vendor, exchange sourced (Barchart, downloaded 27 and 28 August 2026) |
 | `vendor/` | `fx_ohlc_2010_2025.csv`, the free provider series used in the original study | Free redistribution of the ICE spot index |
-| `fred/` | `fred_daily.csv` and `rates.csv` covering 2010 onward, `fred_long.csv` covering 1999 onward | Federal Reserve H.10 and OECD three month interbank rates, retrieved through FRED |
+| `fred/` | `fred_daily.csv` and `rates.csv` covering 2010 onward, `fred_long.csv` covering 1956 onward (the long sample in the paper starts in January 1999) | Federal Reserve H.10, OECD three month interbank rates, and Federal Reserve and ECB policy rates, retrieved through FRED |
+
+## Files
+
+| File | Rows | Dates | Columns |
+|---|---|---|---|
+| `futures/E6.csv`, `B6.csv`, `D6.csv`, `J6.csv`, `S6.csv` | 3,800 each | 2010-12-01 to 2025-12-30 | Symbol (contract, e.g. `E6Z10`), Time, Open, High, Low, Latest, Change, %Change, Volume, Open Int |
+| `futures/DX.csv` | 3,889 | 2010-12-01 to 2025-12-30 | as above |
+| `vendor/fx_ohlc_2010_2025.csv` | 3,932 | 2010-12-01 to 2025-12-30 | Date, then Open, High, Low, Close for EURUSD, GBPUSD, CADUSD, CHFUSD, JPYUSD, SEKUSD and DXY |
+| `fred/fred_daily.csv` | 3,946 | 2010-11-22 to 2026-01-05 | Date, DTWEXBGS, DTWEXAFEGS (Federal Reserve broad and advanced-foreign-economies dollar indexes), DEXUSEU, DEXJPUS, DEXUSUK, DEXCAUS, DEXSDUS, DEXSZUS (H.10 noon rates) |
+| `fred/rates.csv` | 5,849 | 2010-01-01 to 2026-01-05 | Date, DTB3 (3-month T-bill), DFF (fed funds), ECBDFR, ECBMRRFR (ECB deposit and main refinancing rates), IR3TIB01 three month interbank rates for JP, GB, CA, SE, CH, EZ, US (monthly) |
+| `fred/fred_long.csv` | 14,886 | 1956-01-01 to 2026-08-21 | Date, DEXUSEU, DEXUSUK, DEXJPUS, DEXCAUS, DEXSDUS, DEXSZUS, IR3TIB01 three month interbank rates for EZ, GB, JP, CA, SE, CH, US (monthly; start dates differ by country, the euro rate from 1999 and the yen rate from 2002) |
+
+Each futures file ends with one line that is not data ("Downloaded from Barchart.com as of
+..."), which `src/data.py` drops. The rate columns are monthly or have gaps on holidays;
+the loaders forward-fill them onto the trading calendar.
 
 ## Licensing
 
